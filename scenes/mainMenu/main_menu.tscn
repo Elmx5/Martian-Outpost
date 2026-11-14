@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://06qh3se07ftb" path="res://scenes/mainGame/main_game.tscn" id="3_vif7f"]
 [ext_resource type="Script" uid="uid://covsh5idf1x0g" path="res://scenes/mainMenu/options.gd" id="4_wfauu"]
 [ext_resource type="PackedScene" uid="uid://cwqhdltksd0go" path="res://scenes/optionsMenu/options_menu.tscn" id="5_m3keh"]
+[ext_resource type="AudioStream" uid="uid://ut145nqy56in" path="res://assets/audio/music/Musica_Menu(Nocturnal Breathing - Rand Aldo).mp3" id="7_621iq"]
 
 [node name="MainMenu" type="Control" unique_id=1252598540]
 layout_mode = 3
@@ -49,3 +50,7 @@ theme = ExtResource("1_8jkg5")
 text = "Options"
 script = ExtResource("4_wfauu")
 options_scene = ExtResource("5_m3keh")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=661025396]
+stream = ExtResource("7_621iq")
+autoplay = true

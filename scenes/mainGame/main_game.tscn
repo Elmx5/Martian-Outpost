@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://buu2mfapp7qrt" path="res://assets/sprites/menus/office.png" id="1_4j5i6"]
 [ext_resource type="Texture2D" uid="uid://vodhi6e8xyt1" path="res://assets/sprites/menus/desktop.png" id="2_qnr14"]
+[ext_resource type="AudioStream" uid="uid://mn2pxb7rx0gu" path="res://assets/audio/music/Musica_Principal_Ambiental(The Heron - Adam Ollend).mp3" id="3_iufcq"]
 
 [node name="JuegoPrincipal" type="Node2D" unique_id=294691593]
 
@@ -16,3 +17,7 @@ offset_top = 339.0
 offset_right = 1152.0
 offset_bottom = 648.0
 texture = ExtResource("2_qnr14")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1478620034]
+stream = ExtResource("3_iufcq")
+autoplay = true
