@@ -26,7 +26,7 @@ var photo: Texture2D
 var winChance: float 
 
 func _init(_id:String, _desc: String, _type: Type, _op1: Benefits, _op2: Benefits,
-		 _duration: int, _photo: Texture2D, _character: PackedScene = null, _winChance: float = 1.0) -> void:
+		 _duration: int, _photo: Texture2D = null, _character: PackedScene = null, _winChance: float = 1.0) -> void:
 	id = _id
 	desc = _desc
 	type = _type
