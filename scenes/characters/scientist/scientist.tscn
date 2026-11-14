@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://0xeetkk5gje8"]
+
+[ext_resource type="Texture2D" uid="uid://dfbuigoq574qc" path="res://assets/sprites/characters/scientificSpriteSheet.png" id="1_vcglk"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gs3es"]
+atlas = ExtResource("1_vcglk")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bpbs6"]
+atlas = ExtResource("1_vcglk")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gcnt8"]
+atlas = ExtResource("1_vcglk")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_g4v7s"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gs3es")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bpbs6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gcnt8")
+}],
+"loop": 1,
+"name": &"talk",
+"speed": 5.0
+}]
+
+[node name="Scientist" type="Node2D" unique_id=889461891]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1468543611]
+sprite_frames = SubResource("SpriteFrames_g4v7s")
+animation = &"talk"

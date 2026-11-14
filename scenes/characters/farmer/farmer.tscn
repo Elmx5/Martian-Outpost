@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://2y6kidugf2x8"]
+
+[ext_resource type="Texture2D" uid="uid://df35147eie762" path="res://assets/sprites/characters/jhonStreetSheet.png" id="1_4v1cr"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1yyn1"]
+atlas = ExtResource("1_4v1cr")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pmd7e"]
+atlas = ExtResource("1_4v1cr")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2y2cx"]
+atlas = ExtResource("1_4v1cr")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_g4v7s"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1yyn1")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pmd7e")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2y2cx")
+}],
+"loop": 1,
+"name": &"talk",
+"speed": 5.0
+}]
+
+[node name="Farmer" type="Node2D" unique_id=1687083473]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1058904844]
+sprite_frames = SubResource("SpriteFrames_g4v7s")
+animation = &"talk"
