@@ -86,10 +86,80 @@ func _ready() -> void:
 						
 	_register(Event.new("farm3", 
 						"I want to use some of our water resources to make a protection for our plants", 
-						Event.Type.EVENT, 
+						Event.Type.CHARACTER, 
 						Event.Benefits.new(0,0,-15),
 						Event.Benefits.new(0,-15), #Falta añadir
 						0, null, Farmer))
+						
+	_register(Event.new("farm4", 
+						"I want to build a subterrain greenhouse to produce more food", 
+						Event.Type.CHARACTER, 
+						Event.Benefits.new(-15,15,-5), #Habría que añadir
+						Event.Benefits.new(0,-15), 
+						0, null, Farmer, 70))
+						
+	_register(Event.new("science2", 
+						"I want to investigate which plants resist most to radiation", 
+						Event.Type.CHARACTER, 
+						Event.Benefits.new(-10,5), #Habría que añadir
+						Event.Benefits.new(0,-5), 
+						0, null, Scientist, 50))
+						
+	_register(Event.new("expedition4", 
+						"I want to search in a old and abandoned base", 
+						Event.Type.CHARACTER, 
+						Event.Benefits.new(15,0,0,10), 
+						Event.Benefits.new(), 
+						2, null, Astronaut, 80))
+						
+	_register(Event.new("dusk", 
+						"A martian storm!!! There's too much dusk!!!!", 
+						Event.Type.EVENT, 
+						Event.Benefits.new(), #Falta añadir que no haya producción
+						Event.Benefits.new(), 
+						1, null, null))
+						
+	_register(Event.new("bad_harvest", 
+						"We are having a bad harvest!!!", 
+						Event.Type.EVENT, 
+						Event.Benefits.new(), #Falta añadir que no haya producción
+						Event.Benefits.new(), 
+						1, null, null))
+						
+	_register(Event.new("water_production", 
+						"I want some energy to make water from human fluids", 
+						Event.Type.CHARACTER, 
+						Event.Benefits.new(-15,0,10), 
+						Event.Benefits.new(), 
+						0, null, Scientist))
+						
+	_register(Event.new("water_toxins", 
+						"OH NO!!!!!! There are toxins in the water!!!! Do you drink it anyway?", 
+						Event.Type.EVENT, 
+						Event.Benefits.new(0,0,15), 
+						Event.Benefits.new(0,0,-20), 
+						0, null, Scientist, 30))
+						
+	_register(Event.new("oxygen_leak", 
+						"We have a leak in our oxigen tank!! We need to repair it!!!", 
+						Event.Type.EVENT, 
+						Event.Benefits.new(-10,0,-5), 
+						Event.Benefits.new(), #Game over en 3 días
+						0, null, Scientist, 90))
+						
+	_register(Event.new("lack_of_oxygen", 
+						"You need to produce more oxygen", 
+						Event.Type.COMMS, 
+						Event.Benefits.new(-15), 
+						Event.Benefits.new(-25), #Habría que revisar
+						2, null, Radio))
+						
+	_register(Event.new("excavation_problem", 
+						"The water excavation its getting complicated, do we continue or search in another place?", 
+						Event.Type.EVENT, 
+						Event.Benefits.new(-10,0,20), 
+						Event.Benefits.new(-20,0,10), 
+						65, null, null))
 						
 func _register(ev: Event) -> void:
 	events[ev.desc] = ev
