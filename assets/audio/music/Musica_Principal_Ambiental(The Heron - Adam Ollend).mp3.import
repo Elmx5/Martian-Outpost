@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://mn2pxb7rx0gu"
+path="res://.godot/imported/Musica_Principal_Ambiental(The Heron - Adam Ollend).mp3-e0da99d1af83d6ba3d275f50f61f5c85.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/music/Musica_Principal_Ambiental(The Heron - Adam Ollend).mp3"
+dest_files=["res://.godot/imported/Musica_Principal_Ambiental(The Heron - Adam Ollend).mp3-e0da99d1af83d6ba3d275f50f61f5c85.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
