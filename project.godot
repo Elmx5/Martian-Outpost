@@ -11,13 +11,13 @@ config_version=5
 [application]
 
 config/name="JuegoNasa"
+run/main_scene="uid://b8frspvc2irfk"
 config/features=PackedStringArray("4.7", "GL Compatibility")
-config/icon="res://icon.svg"
+config/icon="res://assets/sprites/icon.svg"
 
 [display]
 
 window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
 
 [physics]
 
