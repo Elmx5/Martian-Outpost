@@ -1,7 +1,0 @@
-[gd_scene format=3 uid="uid://bptveeaw3dxs5"]
-
-[ext_resource type="PackedScene" uid="uid://de045lkqplcmb" path="res://scenes/buttons/playButton/boton_jugar.tscn" id="1_emnto"]
-
-[node name="MenuPrincipal" type="Node2D" unique_id=1247180651]
-
-[node name="BotonJugar" parent="." unique_id=34598856 instance=ExtResource("1_emnto")]
