@@ -12,8 +12,9 @@ Gestionas una base marciana y debes mantener con vida a su tripulación. Para el
 
 - **Soporte vital**, incluido el oxígeno
 - **Protección contra la radiación**
-- **Producción de energía y comida**
-- **Retraso en las comunicaciones**
+- **Producción de energía**
+- **Producción de comida**
+- **Retraso en las comunicaciones con la Tierra**
 
 La **energía es limitada** y hay que repartirla entre soporte vital, comunicaciones y ciencia. Además, todos estos factores deben tenerse en cuenta en el ecosistema durante las expediciones.
 
@@ -25,11 +26,10 @@ Cada decisión tiene efectos notorios y sirve para explicar y comprender mejor l
 
 ## 🕹️ Cómo se juega
 
-El juego combina tres ideas:
-
-- **Supervivencia y gestión de recursos**
-- **Árboles de elección narrativa**
-- **Simulador de control de misión** con un panel de mando
+El juego se basa en la **supervivencia y gestión de recursos** mientras a su vez tienes que **tomar decisiones** que definirán el futuro de la colonia, con aspectos inspirados en:
+  - **Papers please**
+  - **Dealer's life**
+  - **Despotism 3k**
 
 Cada cierto número de días se producen **eventos preprogramados** que hacen avanzar la historia y obligan al jugador a tomar decisiones.
 
@@ -44,7 +44,7 @@ Cada cierto número de días se producen **eventos preprogramados** que hacen av
 
 - Que los niños puedan **aprender y divertirse**.
 - Público objetivo de **7 a 12 años**, aunque puede ser disfrutado por cualquier edad.
-- Disponible en **navegador, ordenador o móvil**.
+- Disponible en **navegador: ordenador o móvil**.
 - Especificar claramente que los datos utilizados son **datos de la NASA**.
 - **Explicar los términos científicos** y utilizarlos dentro del juego.
 - Fomentar la **rejugabilidad**.
