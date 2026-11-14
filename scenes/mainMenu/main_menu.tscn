@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://covsh5idf1x0g" path="res://scenes/mainMenu/options.gd" id="4_wfauu"]
 [ext_resource type="PackedScene" uid="uid://cwqhdltksd0go" path="res://scenes/optionsMenu/options_menu.tscn" id="5_m3keh"]
 [ext_resource type="AudioStream" uid="uid://ut145nqy56in" path="res://assets/audio/music/Musica_Menu(Nocturnal Breathing - Rand Aldo).mp3" id="7_621iq"]
+[ext_resource type="Texture2D" uid="uid://cn4h8dvg6srvj" path="res://assets/sprites/menus/disclaimer.png" id="8_biq0h"]
 
 [node name="MainMenu" type="Control" unique_id=1252598540]
 layout_mode = 3
@@ -37,12 +38,14 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 20
 
-[node name="play" type="Button" parent="VBoxContainer" unique_id=1500832186]
+[node name="play" type="Button" parent="VBoxContainer" unique_id=1500832186 node_paths=PackedStringArray("main_menu", "disclaimer")]
 layout_mode = 2
 theme = ExtResource("1_8jkg5")
 text = "Play"
 script = ExtResource("2_0ma31")
 game_scene = ExtResource("3_vif7f")
+main_menu = NodePath("../..")
+disclaimer = NodePath("../../Disclaimer")
 
 [node name="options" type="Button" parent="VBoxContainer" unique_id=895939124]
 layout_mode = 2
@@ -54,3 +57,13 @@ options_scene = ExtResource("5_m3keh")
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=661025396]
 stream = ExtResource("7_621iq")
 autoplay = true
+
+[node name="Disclaimer" type="TextureRect" parent="." unique_id=1227882581]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_right = 1149.0
+offset_bottom = 647.0
+mouse_filter = 2
+texture = ExtResource("8_biq0h")
+expand_mode = 1
+stretch_mode = 5
