@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://g3mk3cbd7wlv"]
+
+[ext_resource type="Texture2D" uid="uid://60qtoh3wkc6" path="res://assets/sprites/characters/astroSpriteSheet.png" id="1_d4yce"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cjg3t"]
+atlas = ExtResource("1_d4yce")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7ei6n"]
+atlas = ExtResource("1_d4yce")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sof2d"]
+atlas = ExtResource("1_d4yce")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_s1fef"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cjg3t")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7ei6n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sof2d")
+}],
+"loop": 1,
+"name": &"talk",
+"speed": 5.0
+}]
+
+[node name="Astronaut" type="Node2D" unique_id=326840484]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1319256940]
+sprite_frames = SubResource("SpriteFrames_s1fef")
+animation = &"idle"

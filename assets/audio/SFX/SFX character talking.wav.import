@@ -3,12 +3,12 @@
 importer="wav"
 type="AudioStreamWAV"
 uid="uid://dpqfuavy7mvdw"
-path="res://.godot/imported/SFX character talking.wav-9ad7e645d90dc1f1a6bcb73a5caaffc1.sample"
+path="res://.godot/imported/SFX character talking.wav-bb226b6d1eb5c7b6ba090a8cbca7b806.sample"
 
 [deps]
 
-source_file="res://assets/audio/sfx/SFX character talking.wav"
-dest_files=["res://.godot/imported/SFX character talking.wav-9ad7e645d90dc1f1a6bcb73a5caaffc1.sample"]
+source_file="res://assets/audio/SFX/SFX character talking.wav"
+dest_files=["res://.godot/imported/SFX character talking.wav-bb226b6d1eb5c7b6ba090a8cbca7b806.sample"]
 
 [params]
 
