@@ -1,0 +1,6 @@
+[gd_resource type="Theme" format=3 uid="uid://deughbw8ootrg"]
+
+[ext_resource type="FontFile" uid="uid://pdtn7a2mtvs1" path="res://assets/fonts/GeistPixel-Regular-VariableFont_ELSH.ttf" id="1_iitid"]
+
+[resource]
+Label/fonts/font = ExtResource("1_iitid")
