@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bnvm4tjs77ypq"
-path="res://.godot/imported/solar_flare_cabron.png-b273c2627f0b8e1408ae5da2153025fb.ctex"
+path="res://.godot/imported/solar_flare_cabron.png-5928f837fed7ad36b13818d9ea21c84f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/Event_Images/solar_flare_cabron.png"
-dest_files=["res://.godot/imported/solar_flare_cabron.png-b273c2627f0b8e1408ae5da2153025fb.ctex"]
+source_file="res://assets/sprites/event_images/solar_flare_cabron.png"
+dest_files=["res://.godot/imported/solar_flare_cabron.png-5928f837fed7ad36b13818d9ea21c84f.ctex"]
 
 [params]
 
