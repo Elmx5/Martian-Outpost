@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://dwunnj58pqs66"]
+
+[ext_resource type="Texture2D" uid="uid://bichn615ba58c" path="res://assets/sprites/characters/radioSpriteSheet.png" id="1_85h1g"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4a67f"]
+atlas = ExtResource("1_85h1g")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s5c8n"]
+atlas = ExtResource("1_85h1g")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bplp3"]
+atlas = ExtResource("1_85h1g")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_g4v7s"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4a67f")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s5c8n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bplp3")
+}],
+"loop": 1,
+"name": &"talk",
+"speed": 5.0
+}]
+
+[node name="Radio" type="Node2D" unique_id=452606951]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1214089345]
+sprite_frames = SubResource("SpriteFrames_g4v7s")
+animation = &"talk"
