@@ -19,12 +19,14 @@ const SICK_LEVEL := 60       # con esta radiacion o mas la tripulacion enferma
 const SICK_PENALTY := 3      # cada noche enferma: pierdes esto en energia, comida y agua
 const DAY_EVENT_CHANCE := 0.75  # probabilidad de que un dia (a partir del 2) empiece con un evento del dia
 # Produccion y gasto base de cada NOCHE por recurso (energia, comida, agua, radiacion).
-# "prod" = produccion: los eventos del dia pueden bloquearla (ej. el dust devil tapa los paneles solares).
+# La produccion solo funciona cuando el edificio esta construido ("bld"). Con todo construido la base pierde un poco cada noche
+# (-3 energia, -3 comida, -3 agua, +3 radiacion): hay que mejorarla con eventos (invernadero, fision, refugio...) para aguantar.
+# "prod" = produccion: los eventos del dia pueden bloquearla (ej. una tormenta de polvo tapa los paneles solares).
 var base_lines: Array = [
-	[{"label": "☀️ Solar panels", "v": 9, "prod": true, "bld": "panels"}, {"label": "🏠 Base lights", "v": -7}],
-	[{"label": "🌱 Farm", "v": 7, "prod": true, "bld": "farm"}, {"label": "🍽️ Crew meals", "v": -7}],
-	[{"label": "💧 Water pump", "v": 7, "prod": true, "bld": "water"}, {"label": "🚿 Crew water", "v": -7}],
-	[{"label": "🌌 Space radiation", "v": 9, "prod": true}, {"label": "🛡️ Base shield", "v": -10}],
+	[{"label": "☀️ Solar panels", "v": 8, "prod": true, "bld": "panels"}, {"label": "🏠 Base lights", "v": -11}],
+	[{"label": "🌱 Farm", "v": 6, "prod": true, "bld": "farm"}, {"label": "🍽️ Crew meals", "v": -9}],
+	[{"label": "💧 Water treatment", "v": 6, "prod": true, "bld": "water"}, {"label": "🚿 Crew water", "v": -9}],
+	[{"label": "🌌 Space radiation", "v": 12, "prod": true}, {"label": "🛡️ Base shield", "v": -9}],
 ]
 
 # Posiciones (fraccion de pantalla): puerta de la oficina y sitio donde se para el visitante
@@ -33,12 +35,15 @@ const SPOT := Vector2(0.44, 0.30)
 
 # Tutorial de la radio de la NASA. hl = parte de la pantalla que parpadea
 const TUTORIAL := [
-	{"emoji": "📻🌍👋", "text": "Hi Commander! This is NASA calling from Earth!", "hl": ""},
+	{"emoji": "📻🌍👋", "text": "Hi Commander! This is NASA calling from Earth! This message is pre-recorded.", "hl": ""},
+	{"emoji": "📻🚫📡", "text": "We cannot talk to you live until you build an antenna. Today all our radio messages are pre-recorded!", "hl": ""},
+	{"emoji": "📡✅🛰️", "text": "With the antenna we can send you live advice, satellite discoveries and warnings before a disaster!", "hl": ""},
 	{"emoji": "🚪👨‍🚀🧑‍🌾", "text": "Your crew will knock on the door. Listen to them and decide!", "hl": ""},
 	{"emoji": "👆👍👎", "text": "Pick one of the two buttons. Hover over them to preview what changes!", "hl": "buttons"},
 	{"emoji": "⚡🥬💧", "text": "These bars are your base. If Energy, Food or Water reaches 0, you lose!", "hl": "bars"},
 	{"emoji": "☢️⬇️", "text": "Radiation works backwards: keep it LOW! Above 60 the crew gets sick!", "hl": "bars"},
 	{"emoji": "🌙🔎", "text": "Every night your base makes and uses resources. Hover over a bar to see the details!", "hl": "bars"},
+	{"emoji": "🏗️⚡🥬", "text": "Buildings cost resources, but then they produce every night. Until you build them, nothing is produced!", "hl": ""},
 	{"emoji": "⚠️🌪️", "text": "Some days start with an alert, like a dust devil, that changes what you gain tonight!", "hl": ""},
 	{"emoji": "📅🌙", "text": "Every day brings 2 to 5 visitors. Survive {d} days to win!", "hl": ""},
 	{"emoji": "🚀🍀", "text": "Good luck, Commander! We are counting on you!", "hl": ""},
@@ -89,6 +94,8 @@ var photo: TextureRect
 var photo_frame: PanelContainer
 var credit_label: Label
 var screen_header: Label
+var rec_label: Label
+var scheduled := {}        # desastre que NASA ha predicho para manana: {id, ready}
 var text_label: RichTextLabel
 var desk_text: PanelContainer
 var fact_label: RichTextLabel
@@ -247,6 +254,7 @@ func _build_monitor() -> void:
 	screen_header.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	head.add_child(screen_header)
 	var rec := Label.new()
+	rec_label = rec
 	rec.text = "● LIVE"
 	rec.add_theme_font_size_override("font_size", 14)
 	rec.add_theme_color_override("font_color", UIStyle.SCREEN_FG)
@@ -469,6 +477,10 @@ func _refresh_mods() -> void:
 	if not today_event.is_empty():
 		_mod_row("⚠️ %s (%d night%s)" % [today_event["label"], today_left, "" if today_left == 1 else "s"], Color("fca5a5"))
 		rows += 1
+	if not scheduled.is_empty():
+		var sl: String = EventsData.day_events[scheduled["id"]]["label"]
+		_mod_row("🛰️ Tomorrow: %s%s" % [sl, " (ready)" if scheduled["ready"] else " (NOT ready)"], Color("93c5fd") if scheduled["ready"] else Color("fca5a5"))
+		rows += 1
 	for m in mods:
 		_mod_row(m["label"] if m["days"] < 0 else "%s  (%dd)" % [m["label"], m["days"]], Color.WHITE)
 		rows += 1
@@ -535,7 +547,7 @@ func _tut_step() -> void:
 	var line := String(s["text"]).replace("{d}", str(WIN_DAY))
 	if infinite:
 		line = line.replace("Survive %d days to win!" % WIN_DAY, "Survive as many days as you can!")
-	await _say(s["emoji"], line, null, {}, "NASA CALLING")
+	await _say(s["emoji"], line, null, {}, "NASA · PRE-RECORDED", "", false)
 	busy = false
 
 func _tutorial_next() -> void:
@@ -567,7 +579,14 @@ func _begin_day() -> void:
 	await get_tree().create_timer(0.8).timeout
 	# Al empezar el dia, a veces hay una alerta que cambia lo que ganas por la noche
 	var ids := _day_event_ids()
-	if day > 1 and today_event.is_empty() and not ids.is_empty() and randf() < DAY_EVENT_CHANCE:
+	if not scheduled.is_empty() and today_event.is_empty():
+		# NASA lo predijo ayer: hoy ocurre seguro (sin perdidas si te preparaste)
+		today_event = EventsData.day_event_today(scheduled["id"], scheduled["ready"])
+		scheduled = {}
+		today_left = int(today_event.get("days", 1))
+		_refresh_mods()
+		_announce(today_event)
+	elif day > 1 and today_event.is_empty() and not ids.is_empty() and randf() < DAY_EVENT_CHANCE:
 		today_event = EventsData.day_event_today(ids.pick_random())
 		today_left = int(today_event.get("days", 1))
 		_refresh_mods()
@@ -593,7 +612,7 @@ func _announce(d: Dictionary) -> void:
 	for i in 2:
 		a.tween_property(alert, "modulate:a", 0.3, 0.2)
 		a.tween_property(alert, "modulate:a", 0.0, 0.25)
-	await _say(d["emojis"], d["text"], d["photo"], d.get("fact", {}), "DAILY ALERT", d.get("credit", ""))
+	await _say(d["emojis"], d["text"], d["photo"], d.get("fact", {}), "AS PREDICTED · YOU WERE READY" if d.get("prepared", false) else "DAILY ALERT", d.get("credit", ""))
 	busy = false
 
 func _announce_done() -> void:
@@ -617,7 +636,8 @@ func _next_event() -> void:
 		is_extra = false
 	_show_event(current)
 
-# Evento al azar: sin tutoriales, sin los que piden un edificio que aun no existe y sin construir dos veces lo mismo
+# Evento al azar: sin tutoriales, sin construir dos veces lo mismo, sin mejoras permanentes ya compradas,
+# sin los que piden un edificio que aun no existe y SIN mensajes de la NASA hasta que la antena este construida
 func _pick_event() -> Event:
 	for i in 80:
 		if deck.is_empty():
@@ -628,7 +648,14 @@ func _pick_event() -> Event:
 		var ev: Event = EventsData.events[deck.pop_back()]
 		var done: bool = ev.build1 != "" and built.has(ev.build1)
 		var away: bool = astro_away > 0 and ev.character == EventsData.Astronaut
-		if (ev.requires == "" or built.has(ev.requires)) and not done and not away:
+		var no_signal: bool = ev.type == Event.Type.COMMS and not built.has("antenna")
+		var double_warning: bool = ev.warns != "" and not scheduled.is_empty()
+		var owned := false
+		if not ev.mod1.is_empty() and ev.mod1["days"] < 0:
+			for m in mods:
+				if m.get("src", "") == ev.id:
+					owned = true
+		if (ev.requires == "" or built.has(ev.requires)) and not done and not away and not no_signal and not double_warning and not owned:
 			return ev
 	return EventsData.events["water_dig"]
 
@@ -641,7 +668,9 @@ func _show_event(ev: Event) -> void:
 	btn2.text = ev.label2
 	var ph: Texture2D = ev.photo if ev.photo != null else EventsData.nasa_photo(ev.id)
 	var hdr := _speaker(ev)
-	await _say(ev.emojis, ev.desc, ph, EventsData.fact_for(ev.id), hdr, EventsData.photo_credit(ev.id))
+	# Sin antena los mensajes de la NASA son pregrabados (no es una conversacion en directo)
+	var live := ev.type != Event.Type.COMMS or built.has("antenna")
+	await _say(ev.emojis, ev.desc, ph, EventsData.fact_for(ev.id), hdr, EventsData.photo_credit(ev.id), live)
 	busy = false
 
 # Nombre y oficio del personaje, que se muestra encima del texto del monitor
@@ -654,7 +683,7 @@ func _speaker(ev: Event) -> String:
 		return "ANTHONY CLARK · ASTRONAUT"
 	if ev.character == null:
 		return "BASE ALERT"
-	return "RADIO FROM EARTH"
+	return "NASA · LIVE" if built.has("antenna") else "NASA · PRE-RECORDED"
 
 # El visitante llama a la puerta, esta se ilumina y entra caminando
 func _arrive(scene: PackedScene, _fallback: String, alert_flash: bool) -> void:
@@ -704,8 +733,9 @@ func _arrive(scene: PackedScene, _fallback: String, alert_flash: bool) -> void:
 	bob_tw.tween_property(who, "position:y", spot.y, 0.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 # Burbuja con rebote + texto que se escribe poco a poco mientras habla
-func _say(emojis: String, text: String, img: Texture2D = null, fact: Dictionary = {}, header := "INCOMING MESSAGE", credit := "") -> void:
+func _say(emojis: String, text: String, img: Texture2D = null, fact: Dictionary = {}, header := "INCOMING MESSAGE", credit := "", live := true) -> void:
 	screen_header.text = "▌" + header
+	rec_label.text = "● LIVE" if live else "● REC"
 	emoji_label.text = emojis
 	text_label.text = EventsData.hinted(text)
 	text_label.visible_ratio = 0.0
@@ -807,6 +837,9 @@ func _choose(opt: int) -> void:
 	var bld: String = current.build1 if opt == 1 else current.build2
 	if ok and bld != "":
 		built[bld] = true
+	if current.warns != "":
+		# Aviso de la NASA: el desastre ocurre manana seguro; si te preparaste (opcion 1) no pierdes nada
+		scheduled = {"id": current.warns, "ready": opt == 1 and ok}
 	if opt == 2 and current.tutorial and current.type == Event.Type.COMMS:
 		retry.append(current.id)
 	_refresh_mods()

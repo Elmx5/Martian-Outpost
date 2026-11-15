@@ -38,6 +38,10 @@ var glossary: Dictionary = {
 	"fission surface power": "A small nuclear power plant for the Moon and Mars. NASA tested a small version called Kilopower!",
 	"water treatment plant": "A machine that cleans dirty water so we can drink it again. The space station recycles about 98% of its water!",
 	"antenna": "It sends radio messages to Earth. Messages take 4 to 24 minutes to arrive!",
+	"pre-recorded": "Recorded earlier. You cannot answer it, because nobody is talking live. NASA can only talk live after you build the antenna!",
+	"satellite": "A machine that circles a planet and watches it from above. NASA satellites around Mars map ice, dust and weather!",
+	"orbiter": "A spacecraft that travels around a planet to study it from above.",
+	"lava tunnel": "A long underground cave made by flowing lava a very long time ago.",
 	"solar panels": "They turn sunlight into electricity.",
 	"oxygen": "The gas we breathe. Mars air is mostly carbon dioxide, so astronauts must make their own oxygen!",
 	"toxins": "Poisons that can make you sick.",
@@ -113,7 +117,7 @@ func flare_fact() -> Dictionary:
 	return fact
 
 # Copia del evento del dia con su dato real. La llamarada solar usa una llamarada real de la base de datos.
-func day_event_today(id: String) -> Dictionary:
+func day_event_today(id: String, ready := false) -> Dictionary:
 	var d: Dictionary = day_events[id].duplicate()
 	var fact := fact_for(id)
 	if id == "solar_flare":
@@ -121,6 +125,16 @@ func day_event_today(id: String) -> Dictionary:
 		if not ff.is_empty():
 			fact = ff
 			d["text"] = "A solar flare just started! NASA saw a real one on %s. Radiation doubles for 2 days." % ff["date"]
+	if ready:
+		# NASA te aviso ayer y te preparaste: hoy el desastre llega pero no pierdes nada
+		if d["ready"] != "":
+			d["text"] = d["ready"]
+		d["ben"] = Event.Benefits.new()
+		d["block"] = []
+		d["mult"] = {}
+		d["days"] = 1
+		d["label"] = String(d["label"]) + " (prepared)"
+		d["prepared"] = true
 	if not fact.is_empty():
 		d["fact"] = fact
 	# si el evento no trae foto propia, usa la de la NASA (si esta descargada)
@@ -133,20 +147,25 @@ func day_event_today(id: String) -> Dictionary:
 
 func _ready() -> void:
 	_load_nasa()
-	# ===== TUTORIAL: la radio de la NASA te pide construir lo basico. Hasta que lo construyes, esa produccion no funciona.
-	# Si dices que no, vuelve al dia siguiente. =====
+	# ===== TUTORIAL (dia 1): mensajes PREGRABADOS de la NASA. Aun no hay antena, asi que no hablan en directo.
+	# Construir CUESTA recursos y solo da mejoras PASIVAS (produccion cada noche), nunca recursos al momento.
+	# Si dices que no, el mensaje vuelve al dia siguiente. =====
 	_r("build_farm", "📻🌱🏗️", "Build a farm to start producing food", CO,
-		_b(0, 10), "Build", _b(), "Not now", Radio)
+		_b(-15, 0, -10), "Build", _b(), "Not now", Radio)
 	_build("build_farm", 1, "farm")
 	_tut("build_farm")
 	_r("build_panels", "📻☀️🏗️", "Build some solar panels to start producing electricity", CO,
-		_b(10), "Build", _b(), "Not now", Radio)
+		_b(0, -10, -15), "Build", _b(), "Not now", Radio)
 	_build("build_panels", 1, "panels")
 	_tut("build_panels")
 	_r("build_water", "📻💧🏗️", "Build a water treatment plant to start cleaning our water", CO,
-		_b(0, 0, 10), "Build", _b(), "Not now", Radio)
+		_b(-10, -15), "Build", _b(), "Not now", Radio)
 	_build("build_water", 1, "water")
 	_tut("build_water")
+	_r("build_antenna", "📻📡🏗️", "Build an antenna so we can talk to you live. Until then, our messages are pre-recorded", CO,
+		_b(-20, -10), "Build", _b(), "Not now", Radio)
+	_build("build_antenna", 1, "antenna")
+	_tut("build_antenna")
 
 	# ===== EXPEDICIONES (Anthony Clark): el premio llega unos dias DESPUES; si falla, no llega nada =====
 	_r("cave", "👨‍🚀🕳️💎", "I found an interesting cave with useful resources", CH,
@@ -169,11 +188,11 @@ func _ready() -> void:
 	# ===== GRANJA (John Rake) =====
 	_r("new_crops", "🧑‍🌾🌶️🌱", "We are having problems with our farms. I want to try planting other types of food", CH,
 		_b(-5), "Try it", _b(), "No", Farmer, 70.0)
-	_mod("new_crops", 1, "🌶️ New crops", _b(0, 10), 3)
+	_mod("new_crops", 1, "🌶️ New crops", _b(0, 6), 3)
 	_mod("new_crops", 2, "🥀 Failing farms", _b(0, -10), 2)
 	_r("greenhouse", "🧑‍🌾⛏️🏠", "I want to build an underground greenhouse to produce more food", CH,
-		_b(-15, 0, -5), "Build", _b(), "No", Farmer, 70.0)
-	_mod("greenhouse", 1, "🏠 Greenhouse", _b(0, 10), -1)
+		_b(-20, 0, -10), "Build", _b(), "No", Farmer, 70.0)
+	_mod("greenhouse", 1, "🏠 Greenhouse", _b(0, 4), -1)
 	_r("rake", "🧑‍🌾🔧💔", "My rake broke while I was harvesting some lettuce. Could I have some resources to repair it?", CH,
 		_b(-10), "Repair it", _b(), "No", Farmer)
 	_mod("rake", 2, "🔧 Broken rake", _b(0, -10), -1)
@@ -185,20 +204,36 @@ func _ready() -> void:
 	# ===== CIENCIA (Sandra Hawkins) =====
 	_r("research_veg", "🧑‍🔬🥬🔬", "I need to research our vegetables to make them more resistant to the harsh Martian climate. Could I borrow some?", CH,
 		_b(0, -20), "Lend food", _b(), "No", Scientist, 65.0)
-	_mod("research_veg", 1, "🧪 Tougher plants", _b(0, 5), -1)
+	_mod("research_veg", 1, "🧪 Tougher plants", _b(0, 2), -1)
 	_r("rad_plants", "🧑‍🔬☢️🌿", "I want to find out which plants resist radiation best", CH,
 		_b(-10), "Research", _b(0, -5), "No", Scientist, 50.0)
-	_mod("rad_plants", 1, "🌿 Radiation-proof plants", _b(0, 5), -1)
+	_mod("rad_plants", 1, "🌿 Radiation-proof plants", _b(0, 2), -1)
 	_r("water_fluids", "🧑‍🔬♻️💧", "I want to use some energy to make water from human fluids", CH,
 		_b(-15, 0, 10), "Recycle", _b(0, 0, 0, 10), "No", Scientist)
 
 	# ===== RADIO DE LA NASA =====
 	_r("fission_power", "📻⚛️⚡", "We want you to build a Fission Surface Power system to produce more energy", CO,
-		_b(0, 0, -10), "Build", _b(), "No", Radio)
-	_mod("fission_power", 1, "⚛️ Fission power", _b(15), -1)
-	_r("build_antenna", "📻📡🏗️", "Build an antenna so we can talk to you from Earth", CO,
-		_b(-10), "Build", _b(), "Not now", Radio)
-	_build("build_antenna", 1, "antenna")
+		_b(-10, 0, -15), "Build", _b(), "No", Radio)
+	_mod("fission_power", 1, "⚛️ Fission power", _b(8), -1)
+
+	# ===== NASA EN DIRECTO (solo con la antena construida): descubrimientos de satelites, consejos y avisos =====
+	_r("sat_ice", "📻🛰️🧊", "Good news! Our satellite found a big ice deposit near the base. We sent you the coordinates", CO,
+		_b(-10), "Go dig", _b(), "Not now", Radio, 90.0)
+	_later("sat_ice", 1, "🧊 Satellite ice", _b(0, 0, 25), 2)
+	_r("sat_cave", "📻🛰️🕳️", "Our orbiter spotted an old lava tunnel under your base. Thick rock is a great shield against radiation!", CO,
+		_b(-15, 0, -5), "Build shelter", _b(), "Not now", Radio, 80.0)
+	_mod("sat_cave", 1, "🕳️ Cave shelter", _b(0, 0, 0, -3), -1)
+	_r("panel_tip", "📻🧹☀️", "NASA tip: dust is covering your solar panels. If you clean them, they will make more energy for a few days", CO,
+		_b(0, 0, -8), "Clean them", _b(), "No", Radio)
+	_mod("panel_tip", 1, "🧹 Clean panels", _b(3), 3)
+	_needs("panel_tip", "panels")
+	# Avisos: NASA predice un desastre para MANANA. Si te preparas (opcion 1) llega, pero no pierdes recursos.
+	_r("storm_warning", "📻🛰️🌪️", "Warning! Our satellites predict a dust storm tomorrow. You have time to prepare!", CO,
+		_b(-10), "Prepare", _b(), "Ignore", Radio)
+	_warns("storm_warning", "dust_storm")
+	_r("flare_warning", "📻🛰️☀️", "Warning! We saw a big solar storm leave the Sun. It reaches you tomorrow. Get ready!", CO,
+		_b(-10), "Shelter up", _b(), "Ignore", Radio)
+	_warns("flare_warning", "solar_flare")
 	_r("report", "📻🌍📝", "What is the situation up there on Mars? It is time to send us the periodic report", CO,
 		_b(-10), "Send report", _b(), "Later", Radio)
 	_later("report", 2, "📝 Late report", _b(-20), 2)
@@ -225,13 +260,15 @@ func _ready() -> void:
 	_problem("oxygen_leak")
 
 	# ===== ALERTAS DEL DIA: salen al empezar el dia, no hay que decidir =====
-	# _d(id, emojis, texto, etiqueta, efecto cada noche, produccion bloqueada, foto, noches que dura, multiplicadores, edificio requerido)
+	# _d(id, emojis, texto, etiqueta, efecto cada noche, produccion bloqueada, foto, noches que dura, multiplicadores, edificio requerido, texto si NASA te aviso)
 	_d("solar_flare", "☀️💥😰", "A solar flare just started! Everybody run to a safe place away from radiation!",
-		"Solar flare", _b(), [], ImgFlare, 2, {R_RAD: 2})
+		"Solar flare", _b(), [], ImgFlare, 2, {R_RAD: 2}, "",
+		"As NASA warned, a solar flare hit. You were ready, so there is no extra radiation!")
 	_d("bright_sun", "☀️🔋✨", "Mars has rotated and the sunbeams make your solar panels produce more energy!",
 		"Bright Sun", _b(20), [], null, 1, {}, "panels")
 	_d("dust_storm", "🌪️🧹😮", "A Martian storm! There is too much dust!",
-		"Dust storm", _b(), [R_ENERGY, R_FOOD], null)
+		"Dust storm", _b(), [R_ENERGY, R_FOOD], null, 1, {}, "",
+		"As NASA predicted, a Martian storm hit. You were ready, so production keeps going!")
 	_d("bad_harvest", "🥬🥀😟", "We are having a bad harvest!",
 		"Bad harvest", _b(), [R_FOOD], null)
 
@@ -300,10 +337,14 @@ func _tut(id: String) -> void:
 func _needs(id: String, building: String) -> void:
 	events[id].requires = building
 
+# Aviso de la NASA: el evento del dia indicado ocurrira manana. Con la opcion 1 te preparas y no pierdes recursos.
+func _warns(id: String, day_event_id: String) -> void:
+	events[id].warns = day_event_id
+
 func _d(id: String, emojis: String, text: String, label: String, ben: Event.Benefits,
-		block: Array, photo: Texture2D, days := 1, mult := {}, requires := "") -> void:
+		block: Array, photo: Texture2D, days := 1, mult := {}, requires := "", ready := "") -> void:
 	day_events[id] = {"id": id, "emojis": emojis, "text": text, "label": label,
-		"ben": ben, "block": block, "photo": photo, "days": days, "mult": mult, "requires": requires}
+		"ben": ben, "block": block, "photo": photo, "days": days, "mult": mult, "requires": requires, "ready": ready}
 
 # Convierte palabras clave del texto en [hint] de RichTextLabel (tooltip al pasar el raton).
 func hinted(text: String) -> String:

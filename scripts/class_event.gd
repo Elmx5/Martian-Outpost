@@ -48,6 +48,8 @@ var requires := ""
 var tutorial := false
 # Efecto si la opcion 1 FALLA (null = solo pagas los costes de la opcion)
 var fail1: Benefits = null
+# Aviso de la NASA: id del evento del dia que ocurrira MANANA. Si eliges la opcion 1 te preparas y no pierdes recursos
+var warns := ""
 
 func _init(_id:String, _desc: String, _type: Type, _op1: Benefits, _op2: Benefits,
 		 _duration: int, _photo: Texture2D = null, _character: PackedScene = null, _winChance: float = 100.0) -> void:

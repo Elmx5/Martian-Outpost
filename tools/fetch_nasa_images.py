@@ -25,32 +25,43 @@ MANIFEST = ROOT / "data" / "nasa_images.json"
 API = "https://images-api.nasa.gov"
 
 # id de evento (igual que en events_data.gd) -> busqueda en la libreria de la NASA.
-# dust_devil, solar_flare, meteor_rain y reactor ya tienen foto propia en el juego: no estan aqui.
+# solar_flare, reactor_risk y meteor_rain ya tienen foto propia en el juego (assets/sprites/event_images): no estan aqui.
 QUERIES = {
-    "farm1": "Veggie plant growth chamber ISS",
-    "farm2": "lettuce grown on space station Veggie",
-    "farm3": "astronaut watering plants space station",
-    "farm4": "Mars greenhouse habitat concept",
-    "seeds": "Veggie plant pillows seeds",
-    "for_science": "astronaut laboratory plant research",
-    "science2": "radiation plant experiment space station",
-    "water_production": "water recovery system space station",
-    "send_report": "Deep Space Network antenna",
-    "expedition1": "Mars lava tube cave",
-    "expedition2": "Phoenix lander Mars ice trench",
-    "expedition3": "Mars water ice exposed scarp",
-    "expedition4": "Mars Desert Research Station habitat",
-    "suit": "spacewalk spacesuit astronaut repair",
-    "panels": "Mars rover solar panels dust cleaning",
-    "rover": "Perseverance rover rock sample",
-    "lack_of_oxygen": "MOXIE oxygen Mars Perseverance",
-    "shield": "radiation shielding spacecraft habitat",
-    "bright_sun": "Solar Dynamics Observatory Sun",
-    "bad_harvest": "plants growing space station",
-    "toxins": "Phoenix lander Mars soil sample",
+    # tutorial (mensajes pregrabados)
+    "build_farm": "Veggie plant growth chamber ISS",
+    "build_panels": "Mars rover solar panels Opportunity",
+    "build_water": "Water Recovery System space station ECLSS",
+    "build_antenna": "Deep Space Network antenna dish",
+    # expediciones
+    "cave": "Mars cave skylight pit",
+    "ice": "Phoenix Mars lander ice trench",
+    "cliff": "Underground Martian Ice Deposit Exposed at Scarp",
+    "old_base": "Viking 1 lander Mars surface",
+    # granja y ciencia
+    "new_crops": "chile peppers Plant Habitat space station",
+    "greenhouse": "Mars greenhouse habitat concept",
+    "rake": "astronaut harvesting lettuce space station Veggie",
+    "protect_plants": "Advanced Plant Habitat radish ISS",
+    "research_veg": "astronaut lettuce Veggie space station",
+    "rad_plants": "radiation experiment plants space station",
+    "water_fluids": "Urine Processor Assembly space station",
+    # NASA en directo (con antena)
+    "fission_power": "Fission Surface Power concept Moon Mars",
+    "sat_ice": "Mars Reconnaissance Orbiter spacecraft",
+    "sat_cave": "Mars lava tube skylight HiRISE",
+    "panel_tip": "Mars InSight lander solar panels dust",
+    "storm_warning": "Mars global dust storm 2018 Mars Reconnaissance Orbiter",
+    "flare_warning": "coronal mass ejection SOHO STEREO",
+    "report": "Deep Space Network antenna Goldstone",
+    "more_oxygen": "MOXIE oxygen Mars Perseverance",
+    # sucesos de la base
+    "toxins": "Phoenix lander soil sample Mars",
+    "water_dig": "Phoenix scoop icy soil Mars",
     "oxygen_leak": "International Space Station interior module",
-    "hard_ground": "Phoenix lander scoop icy soil",
-    "quiet_sun": "Sun Solar Dynamics Observatory calm",
+    # alertas del dia
+    "bright_sun": "Solar Dynamics Observatory Sun",
+    "dust_storm": "Mars dust storm Opportunity darkening sky",
+    "bad_harvest": "plants growing space station Veggie",
 }
 
 
