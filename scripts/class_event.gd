@@ -32,6 +32,18 @@ var label2: String = "No"
 # Efecto que dura varios dias si se elige esa opcion: {label, ben: Benefits (por dia), days}
 var mod1: Dictionary = {}
 var mod2: Dictionary = {}
+# Efecto que llega DESPUES de N dias si eliges esa opcion: {label, ben: Benefits, days}
+var later1: Dictionary = {}
+var later2: Dictionary = {}
+# Edificio que se construye al elegir esa opcion ("farm", "panels", "water")
+var build1 := ""
+var build2 := ""
+# Edificio que debe estar construido para que este evento pueda salir
+var requires := ""
+# Evento de tutorial: sale seguro el dia 1; si eliges la opcion 2 vuelve al dia siguiente
+var tutorial := false
+# Efecto si la opcion 1 FALLA (null = solo pagas los costes de la opcion)
+var fail1: Benefits = null
 
 func _init(_id:String, _desc: String, _type: Type, _op1: Benefits, _op2: Benefits,
 		 _duration: int, _photo: Texture2D = null, _character: PackedScene = null, _winChance: float = 100.0) -> void:

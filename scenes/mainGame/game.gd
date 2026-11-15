@@ -140,8 +140,10 @@ func _rect(color: Color, x0: float, y0: float, x1: float, y1: float) -> ColorRec
 
 func _build_ui() -> void:
 	sfx = AudioStreamPlayer.new()
+	sfx.bus = Settings.SFX_BUS
 	add_child(sfx)
 	talk = AudioStreamPlayer.new()
+	talk.bus = Settings.SFX_BUS
 	add_child(talk)
 	# Oficina (con la puerta) y luz de la puerta
 	_place(_tex("res://assets/sprites/menus/office.png"), 0.0, 0.0, 1.0, 0.72)

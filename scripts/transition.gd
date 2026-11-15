@@ -26,8 +26,10 @@ func _ready() -> void:
 	_img.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_img.modulate.a = 0.0
 	_sfx = AudioStreamPlayer.new()
+	_sfx.bus = Settings.SFX_BUS
 	add_child(_sfx)
 	_music = AudioStreamPlayer.new()
+	_music.bus = Settings.MUSIC_BUS
 	add_child(_music)
 	_music.finished.connect(func() -> void: _music.play())
 
