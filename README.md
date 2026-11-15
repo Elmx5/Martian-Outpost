@@ -62,3 +62,6 @@ The game pulls from public NASA databases:
 | Astronaut radiation dosimetry | NASA |
 | Biological research | OSDR |
 | Environmental data | ARTEMIS & Mars datasets |
+
+Demo of the game hosted in itchio:
+https://elmax5.itch.io/martian-outpost
