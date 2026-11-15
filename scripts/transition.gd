@@ -1,11 +1,12 @@
 extends CanvasLayer
-# Autoload "Transition": fundidos entre escenas (sin depender de la escena actual).
+# Autoload "Transition": fundidos entre escenas, clic de boton y musica que sobrevive al cambio de escena.
 
 const BTN := preload("res://assets/audio/SFX/SFX Button.wav")
 
 var _fade: ColorRect
 var _img: TextureRect
 var _sfx: AudioStreamPlayer
+var _music: AudioStreamPlayer
 var _busy := false
 
 func _ready() -> void:
@@ -26,10 +27,23 @@ func _ready() -> void:
 	_img.modulate.a = 0.0
 	_sfx = AudioStreamPlayer.new()
 	add_child(_sfx)
+	_music = AudioStreamPlayer.new()
+	add_child(_music)
+	_music.finished.connect(func() -> void: _music.play())
 
 func click() -> void:
 	_sfx.stream = BTN
 	_sfx.play()
+
+# Musica de menu: si ya esta sonando ese mismo tema, no se reinicia (menu <-> opciones)
+func music(stream: AudioStream) -> void:
+	if _music.playing and _music.stream == stream:
+		return
+	_music.stream = stream
+	_music.play()
+
+func stop_music() -> void:
+	_music.stop()
 
 func go(path: String, card: Texture2D = null, hold := 2.5) -> void:
 	if _busy:

@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://06qh3se07ftb"]
 
-[ext_resource type="Script" path="res://scenes/mainGame/game.gd" id="1_game"]
+[ext_resource type="Script" uid="uid://dkl8y22apiprw" path="res://scenes/mainGame/game.gd" id="1_game"]
 [ext_resource type="AudioStream" uid="uid://mn2pxb7rx0gu" path="res://assets/audio/music/Musica_Principal_Ambiental(The Heron - Adam Ollend).mp3" id="3_iufcq"]
 
-[node name="JuegoPrincipal" type="Control"]
+[node name="JuegoPrincipal" type="Control" unique_id=377879100]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,6 +12,6 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_game")
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=477787288]
 stream = ExtResource("3_iufcq")
 autoplay = true

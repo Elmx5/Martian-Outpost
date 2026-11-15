@@ -2,9 +2,11 @@ extends Control
 
 const UIStyle = preload("res://scripts/ui_style.gd")
 const MAIN_SCENE := "res://scenes/mainScene/main_scene.tscn"
+const MUSIC := preload("res://assets/audio/music/Musica_Menu(Nocturnal Breathing - Rand Aldo).mp3")
 
 func _ready() -> void:
 	theme = UIStyle.make_theme()
+	Transition.music(MUSIC)
 	var bg := TextureRect.new()
 	bg.texture = load("res://assets/sprites/menus/backgroundMenu.png")
 	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE

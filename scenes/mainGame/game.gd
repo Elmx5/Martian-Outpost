@@ -85,9 +85,11 @@ var day_label: Label
 var mods_box: VBoxContainer
 var banner: Label
 var sfx: AudioStreamPlayer
+var talk: AudioStreamPlayer
 
 func _ready() -> void:
 	theme = UIStyle.make_theme()
+	Transition.stop_music()
 	Resources.reset()
 	_init_stats()
 	_build_ui()
@@ -101,7 +103,7 @@ func _init_stats() -> void:
 	stats = [
 		{"res": Resources.SpaceResource.ENERGY, "emoji": "⚡", "tag": "PWR", "name": "Energy", "color": Color("fbbf24"), "tip": "Power for the base. At 0 the lights go out!"},
 		{"res": Resources.SpaceResource.FOOD, "emoji": "🥬", "tag": "FOOD", "name": "Food", "color": Color("4ade80"), "tip": "Plants and meals. At 0 the crew is hungry!"},
-		{"res": Resources.SpaceResource.WATER, "emoji": "💧", "tag": "H2O", "name": "Water", "color": Color("38bdf8"), "tip": "To drink and grow plants. At 0 nobody can drink!"},
+		{"res": Resources.SpaceResource.WATER, "emoji": "💧", "tag": "H2O", "name": "Water", "color": Color("38bdf8"), "tip": "To drink, to grow plants, to produce oxigen and to maintain the sistems cool. At 0 nobody can drink!"},
 		{"res": Resources.SpaceResource.RADIATION, "emoji": "☢️", "tag": "RAD", "name": "Radiation", "color": Color("f87171"), "tip": "Keep it LOW! From 60 the crew gets sick, at 100 you lose!"},
 	]
 
@@ -139,6 +141,8 @@ func _rect(color: Color, x0: float, y0: float, x1: float, y1: float) -> ColorRec
 func _build_ui() -> void:
 	sfx = AudioStreamPlayer.new()
 	add_child(sfx)
+	talk = AudioStreamPlayer.new()
+	add_child(talk)
 	# Oficina (con la puerta) y luz de la puerta
 	_place(_tex("res://assets/sprites/menus/office.png"), 0.0, 0.0, 1.0, 0.72)
 	glow = _rect(Color(1.0, 0.92, 0.65), 0.266, 0.04, 0.438, 0.50)
@@ -210,9 +214,9 @@ func _build_bubble() -> void:
 # La "pantalla" del escritorio: un monitor CRT con la explicacion del evento
 func _build_monitor() -> void:
 	desk_text = PanelContainer.new()
-	desk_text.add_theme_stylebox_override("panel", UIStyle.plate(UIStyle.SCREEN_BG, Color("07090c"), 6, 12, 6))
+	desk_text.add_theme_stylebox_override("panel", UIStyle.plate(UIStyle.SCREEN_BG, Color("07090c"), 6, 8, 6))
 	add_child(desk_text)
-	_place(desk_text, 0.232, 0.595, 0.768, 0.915)
+	_place(desk_text, 0.235, 0.615, 0.765, 0.905)
 	desk_text.modulate.a = 0.0
 	var dv := VBoxContainer.new()
 	dv.add_theme_constant_override("separation", 4)
@@ -240,7 +244,7 @@ func _build_monitor() -> void:
 	text_label.bbcode_enabled = true
 	text_label.fit_content = true
 	text_label.scroll_active = false
-	text_label.add_theme_font_size_override("normal_font_size", 24)
+	text_label.add_theme_font_size_override("normal_font_size", 22)
 	text_label.add_theme_color_override("default_color", UIStyle.SCREEN_FG)
 	dv.add_child(text_label)
 	# Dato real de la NASA (con fuente en el tooltip)
@@ -263,7 +267,7 @@ func _build_buttons() -> void:
 	btn_box = VBoxContainer.new()
 	btn_box.add_theme_constant_override("separation", 14)
 	add_child(btn_box)
-	_place(btn_box, 0.014, 0.605, 0.214, 0.935)
+	_place(btn_box, 0.027, 0.595, 0.212, 0.925)
 	btn1 = _make_btn(1)
 	btn2 = _make_btn(2)
 	UIStyle.color_button(btn2, UIStyle.TEAL)
@@ -292,11 +296,11 @@ func _make_btn(opt: int) -> Button:
 # Barras verticales en el escritorio (derecha)
 func _build_bars() -> void:
 	bars_panel = PanelContainer.new()
-	bars_panel.add_theme_stylebox_override("panel", UIStyle.plate(Color("0d1116"), Color("060809"), 4, 8))
+	bars_panel.add_theme_stylebox_override("panel", UIStyle.metal(UIStyle.STEEL, false, 32, 8))
 	add_child(bars_panel)
-	_place(bars_panel, 0.783, 0.585, 0.992, 0.945)
+	_place(bars_panel, 0.79, 0.595, 0.975, 0.925)
 	var hb := HBoxContainer.new()
-	hb.add_theme_constant_override("separation", 4)
+	hb.add_theme_constant_override("separation", 2)
 	bars_panel.add_child(hb)
 	for info in stats:
 		hb.add_child(_make_col(info))
@@ -318,7 +322,7 @@ func _make_col(info: Dictionary) -> VBoxContainer:
 	val.text = str(Resources.getResource(res))
 	var bar = Control.new()
 	bar.set_script(SegmentBarScript)
-	bar.custom_minimum_size = Vector2(30, 90)
+	bar.custom_minimum_size = Vector2(24, 80)
 	bar.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	bar.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -328,10 +332,12 @@ func _make_col(info: Dictionary) -> VBoxContainer:
 		bar.warn_from = float(SICK_LEVEL)
 	val.add_theme_font_size_override("font_size", 22)
 	val.add_theme_color_override("font_color", UIStyle.SCREEN_FG)
+	val.add_theme_stylebox_override("normal", UIStyle.plate(UIStyle.SCREEN_BG, Color("1c2a22"), 2, 2))
 	var tag := Label.new()
 	tag.text = info["tag"]
 	tag.add_theme_font_size_override("font_size", 16)
 	tag.add_theme_color_override("font_color", UIStyle.AMBER)
+	tag.add_theme_stylebox_override("normal", UIStyle.plate(UIStyle.SCREEN_BG, Color("1c2a22"), 2, 2))
 	tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	col.add_child(delta)
 	col.add_child(tag)
@@ -537,9 +543,19 @@ func _show_event(ev: Event) -> void:
 	btn2.text = ev.label2
 	await _arrive(ev.character, ev.emojis, false)
 	var ph: Texture2D = ev.photo if ev.photo != null else EventsData.nasa_photo(ev.id)
-	var hdr := "RADIO FROM EARTH" if ev.type == Event.Type.COMMS else "CREW REQUEST"
+	var hdr := _speaker(ev)
 	await _say(ev.emojis, ev.desc, ph, EventsData.fact_for(ev.id), hdr, EventsData.photo_credit(ev.id))
 	busy = false
+
+# Nombre y oficio del personaje, que se muestra encima del texto del monitor
+func _speaker(ev: Event) -> String:
+	if ev.character == EventsData.Farmer:
+		return "JOHN RAKE · FARMER"
+	if ev.character == EventsData.Scientist:
+		return "SANDRA HAWKINS · SCIENTIST"
+	if ev.character == EventsData.Astronaut:
+		return "ANTHONY CLARK · ASTRONAUT"
+	return "RADIO FROM EARTH"
 
 # El visitante llama a la puerta, esta se ilumina y entra caminando
 func _arrive(scene: PackedScene, fallback: String, alert_flash: bool) -> void:
@@ -616,10 +632,14 @@ func _say(emojis: String, text: String, img: Texture2D = null, fact: Dictionary 
 		spr.play("talk")
 	else:
 		spr = null
-	_sfx(SFX_TALK)
+	# El sonido de voz empieza en un punto distinto cada vez y se corta cuando termina de escribirse el texto
+	var dur := clampf(text.length() * 0.035, 0.6, 1.8)
+	talk.stream = SFX_TALK
+	talk.play(randf_range(0.0, maxf(0.0, SFX_TALK.get_length() - dur)))
 	var tt := create_tween()
-	tt.tween_property(text_label, "visible_ratio", 1.0, clampf(text.length() * 0.035, 0.6, 1.8))
+	tt.tween_property(text_label, "visible_ratio", 1.0, dur)
 	await tt.finished
+	talk.stop()
 	if spr:
 		spr.play("idle")
 
@@ -759,6 +779,7 @@ func _shake() -> void:
 
 # El visitante vuelve a la puerta y se va
 func _dismiss() -> void:
+	talk.stop()
 	if bob_tw:
 		bob_tw.kill()
 	var t := create_tween().set_parallel(true)

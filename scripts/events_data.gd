@@ -129,64 +129,64 @@ func _ready() -> void:
 	_load_nasa()
 	# --- Decisiones ---
 	_r("farm1", "🧑‍🌾😢🔧", "My rake broke! Can you help me?", CH,
-		_b(-10), "🔧 Fix it", _b(0, -10), "🙅 No", Farmer)
+		_b(-10), "Fix it", _b(0, -10), "No", Farmer)
 	_r("send_report", "📻🌍📝", "Earth wants a report. Use the antenna?", CO,
-		_b(-10), "📝 Short", _b(-20), "📚 Long", Radio)
+		_b(-10), "Short", _b(-20), "Long", Radio)
 	_r("expedition1", "👨‍🚀🕳️💎", "I found a cave with resources!", CH,
-		_b(0, 0, 10, 10), "🚀 Go!", _b(), "🏠 Stay", Astronaut, 80.0)
+		_b(0, 0, 10, 10), "Go!", _b(), "Stay", Astronaut, 80.0)
 	_r("expedition2", "👨‍🚀🧊❓", "There is ice far away. Look for water?", CH,
-		_b(0, 0, 20, 20), "🚀 Go!", _b(), "🏠 Stay", Astronaut, 60.0)
+		_b(0, 0, 20, 20), "Go!", _b(), "Stay", Astronaut, 60.0)
 	_r("expedition3", "👨‍🚀🧊⚡", "Ice and energy very far! Risky trip.", CH,
-		_b(20, 0, 30, 20), "🚀 Go!", _b(), "🏠 Stay", Astronaut, 40.0)
+		_b(20, 0, 30, 20), "Go!", _b(), "Stay", Astronaut, 40.0)
 	_r("expedition4", "👨‍🚀🏚️🔎", "Let me search an old abandoned base!", CH,
-		_b(15, 0, 0, 10), "🚀 Go!", _b(), "🏠 Stay", Astronaut, 80.0)
+		_b(15, 0, 0, 10), "Go!", _b(), "Stay", Astronaut, 80.0)
 	_r("farm2", "🧑‍🌾🥬🌱", "Can I plant extra lettuce?", CH,
-		_b(-5, 10), "🌱 Plant", _b(0, -20), "🙅 No", Farmer, 70.0)
+		_b(-5, 10), "Plant", _b(0, -20), "No", Farmer, 70.0)
 	_r("farm3", "🧑‍🌾💧🛡️", "Water to protect my plants?", CH,
-		_b(0, 0, -15), "💧 Yes", _b(0, -15), "🙅 No", Farmer)
+		_b(0, 0, -15), "Yes", _b(0, -15), "No", Farmer)
 	_r("farm4", "🧑‍🌾⛏️🏠", "Can we build an underground greenhouse?", CH,
-		_b(-15, 15, -5), "🏗️ Build", _b(0, -15), "🙅 No", Farmer, 70.0)
+		_b(-15, 15, -5), "Build", _b(0, -15), "No", Farmer, 70.0)
 	_r("seeds", "🧑‍🌾🌰🌱", "New seeds! They need some water.", CH,
-		_b(0, 0, -10), "🌱 Plant", _b(), "🙅 No", Farmer)
+		_b(0, 0, -10), "Plant", _b(), "No", Farmer)
 	_r("for_science", "🧑‍🔬🥬🔬", "Can I borrow some food for science?", CH,
-		_b(0, -20), "🔬 Yes", _b(), "🙅 No", Scientist, 65.0)
+		_b(0, -20), "Yes", _b(), "No", Scientist, 65.0)
 	_r("science2", "🧑‍🔬☢️🌿", "Which plants resist radiation best?", CH,
-		_b(-10, 5), "🔬 Research", _b(0, -5), "🙅 No", Scientist, 50.0)
+		_b(-10, 5), "Research", _b(0, -5), "No", Scientist, 50.0)
 	_r("water_production", "🧑‍🔬♻️💧", "I can recycle water! It needs energy.", CH,
-		_b(-15, 0, 10), "♻️ Yes", _b(), "🙅 No", Scientist)
+		_b(-15, 0, 10), "Yes", _b(), "No", Scientist)
 	_r("shield", "🧑‍🔬🛡️☢️", "I can make our shield stronger against radiation!", CH,
-		_b(-12, 0, 0, -20), "🛡️ Build", _b(), "🙅 No", Scientist)
+		_b(-12, 0, 0, -20), "Build", _b(), "No", Scientist)
 	_r("suit", "👨‍🚀🧵🔧", "My suit has a hole! Can you help fix it?", CH,
-		_b(-8), "🔧 Fix it", _b(0, 0, 0, 15), "🙅 No", Astronaut)
+		_b(-8), "Fix it", _b(0, 0, 0, 15), "No", Astronaut)
 	_r("panels", "👨‍🚀🧽☀️", "Let me clean the solar panels!", CH,
-		_b(0, 0, -5), "🧽 Clean", _b(), "🙅 No", Astronaut)
+		_b(0, 0, -5), "Clean", _b(), "No", Astronaut)
 	_r("rover", "📻🤖🔬", "NASA wants rock samples from the rover!", CO,
-		_b(-10, 0, 10), "🤖 Send", _b(), "🙅 No", Radio)
+		_b(-10, 0, 10), "Send", _b(), "No", Radio)
 	_r("lack_of_oxygen", "📻💨🆘", "We need more oxygen!", CO,
-		_b(-15), "🏭 Some", _b(-25), "🏭 Lots", Radio)
+		_b(-15), "Some", _b(-25), "Lots", Radio)
 	_mods()
 	# --- Eventos del dia: salen al empezar el dia y cambian lo que ganas por la noche ---
 	# _d(id, emojis, texto, etiqueta, efecto de esta noche, produccion bloqueada, foto)
 	_d("dust_devil", "🌪️🧹😮", "A dust devil! The solar panels make no energy today.",
-		"🌪️ Dust devil", _b(), [R_ENERGY], ImgDust)
+		"Dust devil", _b(), [R_ENERGY], ImgDust)
 	_d("solar_flare", "☀️💥😰", "A solar flare! There will be more radiation tonight.",
-		"🌞 Solar flare", _b(0, 0, 0, 20), [], ImgFlare)
+		"Solar flare", _b(0, 0, 0, 20), [], ImgFlare)
 	_d("meteor_rain", "☄️☄️😱", "A meteor shower! Some water and power are lost.",
-		"☄️ Meteors", _b(-5, 0, -8), [], ImgMeteor)
+		"Meteors", _b(-5, 0, -8), [], ImgMeteor)
 	_d("bright_sun", "☀️🔋✨", "Bright Sun! The solar panels make extra energy.",
-		"☀️ Bright Sun", _b(8), [], null)
+		"Bright Sun", _b(8), [], null)
 	_d("reactor", "☢️⚠️🔧", "The reactor is in trouble! Less energy, more radiation.",
-		"☢️ Reactor trouble", _b(-6, 0, 0, 10), [], ImgReactor)
+		"Reactor trouble", _b(-6, 0, 0, 10), [], ImgReactor)
 	_d("bad_harvest", "🥬🥀😟", "A bad harvest! The farm makes no food today.",
-		"🥀 Bad harvest", _b(), [R_FOOD], null)
+		"Bad harvest", _b(), [R_FOOD], null)
 	_d("toxins", "💧☠️😷", "Toxins in the water! Some water is lost.",
-		"☠️ Toxic water", _b(0, 0, -8), [], null)
+		"Toxic water", _b(0, 0, -8), [], null)
 	_d("oxygen_leak", "💨😰🔧", "An oxygen leak! The crew fixes it with power and water.",
-		"💨 Oxygen leak", _b(-6, 0, -4), [], null)
+		"Oxygen leak", _b(-6, 0, -4), [], null)
 	_d("hard_ground", "⛏️🏜️😓", "The ground is too hard! The pump makes no water today.",
-		"⛏️ Hard ground", _b(), [R_WATER], null)
+		"Hard ground", _b(), [R_WATER], null)
 	_d("quiet_sun", "☀️😌🛡️", "A quiet Sun. There is less radiation today!",
-		"😌 Quiet Sun", _b(), [R_RAD], null)
+		"Quiet Sun", _b(), [R_RAD], null)
 
 # Efectos que duran varios dias (opt 1 o 2): se ven en el tooltip de las barras
 func _mods() -> void:
