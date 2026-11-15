@@ -19,6 +19,7 @@ config/icon="res://assets/sprites/icon.svg"
 
 EventsData="*uid://bextrymhl8hpr"
 Resources="*uid://147rcwo0gbdj"
+Transition="*res://scripts/transition.gd"
 
 [display]
 

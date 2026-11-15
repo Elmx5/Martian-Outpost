@@ -1,0 +1,60 @@
+{
+  "_readme": "Datos reales de la NASA usados en el juego. Cada hecho tiene su fuente (sources). Los eventos apuntan a un hecho con 'events'. Los flares reales estan en 'flares'; si existe data/donki_flares.json (generado con tools/fetch_donki.py desde la base de datos DONKI) se usa ese archivo en su lugar.",
+  "sources": {
+    "donki": {"title": "NASA DONKI", "url": "https://ccmc.gsfc.nasa.gov/tools/DONKI"},
+    "nasa_flare_blog": {"title": "NASA Solar Cycle 25 blog (Oct 3, 2024)", "url": "https://science.nasa.gov/blogs/solar-cycle-25/2024/10/03/sun-releases-strong-solar-flare-6"},
+    "flares_list": {"title": "Top flares of 2024 (Space.com)", "url": "https://www.space.com/the-universe/sun/10-most-powerful-solar-flares-of-2024"},
+    "rad": {"title": "Curiosity RAD, Hassler et al., Science 2013", "url": "https://phys.org/news/2013-12-scientists-publish-surface-mars.amp"},
+    "iss_dose": {"title": "Curiosity RAD vs ISS (CBS)", "url": "https://www.cbsnews.com/news/nasa-astronauts-could-survive-mars-radiation"},
+    "gcr_cycle": {"title": "Curiosity RAD (NBC)", "url": "https://www.nbcnews.com/id/wbna50072690"},
+    "meda": {"title": "MEDA dust devils, JGR Planets 2023", "url": "https://doi.org/10.1029/2022JE007494"},
+    "insight_impacts": {"title": "InSight impacts (Brown/NASA, 2024)", "url": "https://www.brown.edu/news/2024-06-28/mars-craters"},
+    "insight_rate": {"title": "InSight impact rate (CNN, 2024)", "url": "https://ktvz.com/cnn-other/2024/06/28/mars-gets-hit-by-hundreds-of-basketball-size-space-rocks-every-year/"},
+    "moxie": {"title": "NASA MOXIE release 2023-127", "url": "https://www.nasa.gov/?p=505480"},
+    "veggie": {"title": "NASA Veggie on the ISS (CBS, 2015)", "url": "https://www.cbsnews.com/amp/news/astronauts-chow-down-on-first-salad-grown-in-space"},
+    "phoenix_jpl": {"title": "NASA JPL Phoenix release 2008-113a", "url": "http://www.jpl.nasa.gov/news/news.cfm?release=2008-113a"},
+    "phoenix_space": {"title": "NASA Phoenix lander (Space.com)", "url": "https://www.space.com/42947-phoenix-mars-lander.html"},
+    "phoenix_ice": {"title": "NASA Phoenix findings (Science, 2009)", "url": "https://www.today.com/today/amp/wbna31712980"},
+    "nasa_comms": {"title": "NASA Space Communications: 7 things to know", "url": "https://www.nasa.gov/solar-system/space-communications-7-things-you-need-to-know/"},
+    "mer_power": {"title": "NASA statement on Opportunity's solar power (Space.com, 2007)", "url": "https://www.space.com/news/070720_rover_dust.html"},
+    "nasa_kilopower": {"title": "NASA Kilopower fission test (NASA release, 2018)", "url": "https://nasa.gov/news-release/demonstration-proves-nuclear-fission-system-can-provide-space-exploration-power/"},
+    "nasa_lava": {"title": "NASA Science: shelter on the Moon and Mars (2025)", "url": "https://science.nasa.gov/blogs/science-news/2025/09/26/hammering-out-shelter-on-moon-and-mars"}
+  },
+  "facts": {
+    "rad": {"text": "Curiosity measured about 0.67 mSv of radiation per day on Mars. Inside its spaceship it was 1.8 mSv per day.", "source": "rad"},
+    "iss_dose": {"text": "Astronauts on the ISS get roughly 0.4 to 1.0 mSv of radiation every day.", "source": "iss_dose"},
+    "gcr_cycle": {"text": "The Sun's 11-year cycle changes how many cosmic rays reach Mars: they vary by a factor of two.", "source": "gcr_cycle"},
+    "meda": {"text": "Perseverance's MEDA sensors detected 374 dust devils in its first 365 sols (Mars days). The average one is about 29 m wide.", "source": "meda"},
+    "insight_rate": {"text": "InSight data suggest 280 to 360 space rocks hit Mars every year and leave craters bigger than 8 m.", "source": "insight_rate"},
+    "insight_dust": {"text": "NASA's InSight lander ended its mission in December 2022 when dust covered its solar panels.", "source": "insight_impacts"},
+    "moxie": {"text": "NASA's MOXIE made 122 grams of oxygen from Mars air in 16 runs. That is enough for a person to breathe for about 4 hours!", "source": "moxie"},
+    "veggie": {"text": "In 2015 ISS astronauts ate lettuce grown in NASA's Veggie box. It took 33 days to grow!", "source": "veggie"},
+    "phoenix_ice": {"text": "NASA's Phoenix lander found water ice only about 5 cm under the surface of Mars (2008).", "source": "phoenix_jpl"},
+    "phoenix_hard": {"text": "Phoenix found rock-hard ice just a few inches under the Martian soil.", "source": "phoenix_ice"},
+    "perchlorates": {"text": "Phoenix found perchlorates, a type of salt that is not good to drink, in the soil of Mars (2008).", "source": "phoenix_space"},
+    "comms_delay": {"text": "Radio messages between Earth and Mars take about 4 to 24 minutes to arrive, depending on where the two planets are.", "source": "nasa_comms"},
+    "mer_power": {"text": "NASA's Opportunity rover made about 700 watt-hours of power a day from its solar panels, enough to light a 100-watt bulb for 7 hours.", "source": "mer_power"},
+    "kilopower": {"text": "NASA's Kilopower test reactor ran at full power for 28 hours. Four Kilopower units could power a space outpost!", "source": "nasa_kilopower"},
+    "lava_tubes": {"text": "NASA scientists say thick rock around ancient lava tunnels on Mars could shield explorers from radiation, space rocks and extreme temperatures.", "source": "nasa_lava"},
+    "donki_log": {"text": "NASA's DONKI database records the daily space weather: solar flares, solar storms and more.", "source": "donki"}
+  },
+  "events": {
+    "farm1": "veggie", "farm2": "veggie", "farm3": "veggie", "farm4": "lava_tubes", "seeds": "veggie",
+    "for_science": "veggie", "science2": "veggie", "bad_harvest": "veggie",
+    "water_production": "phoenix_ice", "expedition2": "phoenix_ice", "expedition3": "phoenix_ice",
+    "expedition1": "lava_tubes", "expedition4": "rad", "shield": "rad", "rover": "rad",
+    "suit": "iss_dose", "panels": "insight_dust", "lack_of_oxygen": "moxie", "oxygen_leak": "moxie",
+    "dust_devil": "meda", "meteor_rain": "insight_rate", "toxins": "perchlorates",
+    "hard_ground": "phoenix_hard", "quiet_sun": "gcr_cycle",
+    "send_report": "comms_delay", "bright_sun": "mer_power", "reactor": "kilopower", "solar_flare": "donki_log"
+  },
+  "flares": [
+    {"date": "2024-02-09", "class": "X3.38", "source": "flares_list"},
+    {"date": "2024-02-22", "class": "X6.37", "source": "flares_list"},
+    {"date": "2024-05-10", "class": "X3.98", "source": "flares_list"},
+    {"date": "2024-05-11", "class": "X5.89", "source": "flares_list"},
+    {"date": "2024-05-14", "class": "X8.7", "source": "flares_list"},
+    {"date": "2024-10-01", "class": "X7.10", "source": "flares_list"},
+    {"date": "2024-10-03", "class": "X9.0", "source": "nasa_flare_blog"}
+  ]
+}

@@ -1,23 +1,17 @@
 [gd_scene format=3 uid="uid://06qh3se07ftb"]
 
-[ext_resource type="Texture2D" uid="uid://buu2mfapp7qrt" path="res://assets/sprites/menus/office.png" id="1_4j5i6"]
-[ext_resource type="Texture2D" uid="uid://vodhi6e8xyt1" path="res://assets/sprites/menus/desktop.png" id="2_qnr14"]
+[ext_resource type="Script" path="res://scenes/mainGame/game.gd" id="1_game"]
 [ext_resource type="AudioStream" uid="uid://mn2pxb7rx0gu" path="res://assets/audio/music/Musica_Principal_Ambiental(The Heron - Adam Ollend).mp3" id="3_iufcq"]
 
-[node name="JuegoPrincipal" type="Node2D" unique_id=294691593]
+[node name="JuegoPrincipal" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_game")
 
-[node name="TextureRect" type="TextureRect" parent="." unique_id=1862703661]
-offset_right = 1152.0
-offset_bottom = 444.0
-texture = ExtResource("1_4j5i6")
-
-[node name="TextureRect2" type="TextureRect" parent="." unique_id=1479212480]
-offset_left = -1.0
-offset_top = 339.0
-offset_right = 1152.0
-offset_bottom = 648.0
-texture = ExtResource("2_qnr14")
-
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1478620034]
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_iufcq")
 autoplay = true

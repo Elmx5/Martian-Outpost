@@ -23,10 +23,18 @@ var benOp2: Benefits
 var duration: int
 var character: PackedScene
 var photo: Texture2D
-var winChance: float 
+var winChance: float # percentage 0-100 (applies to option 1)
+
+# Kid-friendly presentation
+var emojis: String = "❓"
+var label1: String = "Yes"
+var label2: String = "No"
+# Efecto que dura varios dias si se elige esa opcion: {label, ben: Benefits (por dia), days}
+var mod1: Dictionary = {}
+var mod2: Dictionary = {}
 
 func _init(_id:String, _desc: String, _type: Type, _op1: Benefits, _op2: Benefits,
-		 _duration: int, _photo: Texture2D = null, _character: PackedScene = null, _winChance: float = 1.0) -> void:
+		 _duration: int, _photo: Texture2D = null, _character: PackedScene = null, _winChance: float = 100.0) -> void:
 	id = _id
 	desc = _desc
 	type = _type

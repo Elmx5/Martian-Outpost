@@ -1,6 +1,5 @@
 [gd_scene format=3 uid="uid://bptveeaw3dxs5"]
 
-[ext_resource type="Theme" uid="uid://bfce8w4nx7yic" path="res://themes/interface_button_theme.tres" id="1_8jkg5"]
 [ext_resource type="Texture2D" uid="uid://b6150iw7h47s8" path="res://assets/sprites/menus/backgroundMenu.png" id="1_82j8y"]
 [ext_resource type="Script" uid="uid://chlb5qnlusijn" path="res://scenes/mainMenu/play.gd" id="2_0ma31"]
 [ext_resource type="PackedScene" uid="uid://06qh3se07ftb" path="res://scenes/mainGame/main_game.tscn" id="3_vif7f"]
@@ -8,62 +7,72 @@
 [ext_resource type="PackedScene" uid="uid://cwqhdltksd0go" path="res://scenes/optionsMenu/options_menu.tscn" id="5_m3keh"]
 [ext_resource type="AudioStream" uid="uid://ut145nqy56in" path="res://assets/audio/music/Musica_Menu(Nocturnal Breathing - Rand Aldo).mp3" id="7_621iq"]
 [ext_resource type="Texture2D" uid="uid://cn4h8dvg6srvj" path="res://assets/sprites/menus/disclaimer.png" id="8_biq0h"]
+[ext_resource type="Script" path="res://scenes/mainMenu/menu.gd" id="9_menu"]
 
-[node name="MainMenu" type="Control" unique_id=1252598540]
+[node name="MainMenu" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("9_menu")
 
-[node name="TextureRect" type="TextureRect" parent="." unique_id=1286101553]
-layout_mode = 0
-offset_right = 1152.0
-offset_bottom = 648.0
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 texture = ExtResource("1_82j8y")
+expand_mode = 1
+stretch_mode = 6
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=713263118]
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -450.0
+offset_top = 70.0
+offset_right = 450.0
+offset_bottom = 170.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 84
+text = "Martian Outpost"
+horizontal_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
+offset_left = -180.0
+offset_top = 20.0
+offset_right = 180.0
+offset_bottom = 220.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 24
 
-[node name="play" type="Button" parent="VBoxContainer" unique_id=1500832186 node_paths=PackedStringArray("main_menu", "disclaimer")]
+[node name="play" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(360, 90)
 layout_mode = 2
-theme = ExtResource("1_8jkg5")
 text = "Play"
 script = ExtResource("2_0ma31")
 game_scene = ExtResource("3_vif7f")
-main_menu = NodePath("../..")
-disclaimer = NodePath("../../Disclaimer")
+disclaimer_texture = ExtResource("8_biq0h")
 
-[node name="options" type="Button" parent="VBoxContainer" unique_id=895939124]
+[node name="options" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(360, 90)
 layout_mode = 2
-theme = ExtResource("1_8jkg5")
 text = "Options"
 script = ExtResource("4_wfauu")
 options_scene = ExtResource("5_m3keh")
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=661025396]
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("7_621iq")
 autoplay = true
-
-[node name="Disclaimer" type="TextureRect" parent="." unique_id=1227882581]
-modulate = Color(1, 1, 1, 0)
-layout_mode = 0
-offset_right = 1149.0
-offset_bottom = 647.0
-mouse_filter = 2
-texture = ExtResource("8_biq0h")
-expand_mode = 1
-stretch_mode = 5
