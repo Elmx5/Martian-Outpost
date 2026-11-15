@@ -1,82 +1,64 @@
-# 🚀 Martial Outpost
+# 🚀 Martian Outpost
 
-**Martial Outpost** es un juego educativo de supervivencia y gestión de recursos ambientado en una base en Marte. Tú estás al mando: cada decisión cuenta, y cada una conlleva riesgos que tendrás que afrontar más adelante en la partida.
+**Martian Outpost** is an educational survival and resource-management game set on a Mars base. You’re in charge: every choice matters, and each one comes with risks you’ll have to deal with later in the run.
 
-El juego está pensado para que los niños **aprendan y se diviertan** mientras descubren cómo es la vida de los astronautas, usando **datos reales y públicos de la NASA**.
-
----
-
-## 🎮 ¿De qué trata?
-
-Gestionas una base marciana y debes mantener con vida a su tripulación. Para ello tendrás que equilibrar los sistemas clave de la misión:
-
-- **Soporte vital**, incluido el oxígeno
-- **Protección contra la radiación**
-- **Producción de energía**
-- **Producción de comida**
-- **Retraso en las comunicaciones con la Tierra**
-
-La **energía es limitada** y hay que repartirla entre soporte vital, comunicaciones y ciencia. Además, todos estos factores deben tenerse en cuenta en el ecosistema durante las expediciones.
-
-> 💡 Una elección que hoy ahorra energía puede costar oxígeno mañana.
-
-Cada decisión tiene efectos notorios y sirve para explicar y comprender mejor la situación de supervivencia en el espacio.
+We built it so kids can **have fun and learn** what astronaut life is actually like, backed by **real, public NASA data**.
 
 ---
 
-## 🕹️ Cómo se juega
+## 🎮 What’s it about?
 
-El juego se basa en la **supervivencia y gestión de recursos** mientras a su vez tienes que **tomar decisiones** que definirán el futuro de la colonia, con aspectos inspirados en:
-  - **Papers please**
-  - **Dealer's life**
-  - **Despotism 3k**
+You run a Mars base and have to keep your crew alive by balancing key systems:
 
-Cada cierto número de días se producen **eventos preprogramados** que hacen avanzar la historia y obligan al jugador a tomar decisiones.
+- **Life support** (including oxygen)
+- **Radiation shielding**
+- **Power generation**
+- **Food production**
+- **Communication delays with Earth**
 
-### Escenas
+**Power is tight**, so you have to split it between life support, comms, and science. You also have to keep all of these systems in mind when sending crews out on expeditions.
 
-1. **Sala de mando:** aquí te llegan los miembros de la tripulación para contarte sus problemas. Tú decides qué hacer (por ejemplo, respondiendo *Sí* o *No*).
-2. **Minimapa en vista satelital:** puedes ver a la gente de la base y lo que les ocurre, gestionar la base y observar el resultado de tus decisiones.
+> 💡 Saving power today might cost you oxygen tomorrow.
 
----
-
-## 🎯 Objetivos del proyecto
-
-- Que los niños puedan **aprender y divertirse**.
-- Público objetivo de **7 a 12 años**, aunque puede ser disfrutado por cualquier edad.
-- Disponible en **navegador: ordenador o móvil**.
-- Especificar claramente que los datos utilizados son **datos de la NASA**.
-- **Explicar los términos científicos** y utilizarlos dentro del juego.
-- Fomentar la **rejugabilidad**.
-- Tenemos libertad creativa siempre que se mantenga el objetivo informativo: **no se valora más un juego con mejores recursos visuales**, sino que cumpla su función educativa.
+Every choice has clear consequences, helping players understand what it really takes to survive in space.
 
 ---
 
-## 🛰️ Datos reales utilizados
+## 🕹️ How it plays
 
-El juego se apoya en información pública de la NASA:
+At its core, it's a **survival and resource management** game where **your decisions** shape the colony's future. It takes cues from:
+- **Papers, Please**
+- **Dealer's Life**
+- **Despotism 3k**
 
-| Tema | Fuente |
+Every few days, **scripted events** push the story forward and force you to make tough calls.
+
+### Views
+
+1. **Command Room:** Crew members walk in with their problems, and you make the call (like a simple *Yes* or *No*).
+2. **Satellite Minimap:** Check in on your crew, manage the base, and see how your choices play out from above.
+
+---
+
+## 🎯 Project Goals
+
+- Let kids **learn while having fun**.
+- Aimed at ages **7 to 12**, though anyone can play.
+- Playable in the **browser on both desktop and mobile**.
+- Make it clear that the game runs on **real NASA data**.
+- **Break down scientific terms** and weave them into gameplay.
+- Built for **replayability**.
+- We have full creative freedom as long as the educational core stays intact—**flashy graphics matter less** than actually teaching players something.
+
+---
+
+## 🛰️ Real Data Used
+
+The game pulls from public NASA databases:
+
+| Topic | Source |
 |------|--------|
-| Actividad solar y riesgo de radiación | DONKI |
-| Dosimetría de la radiación de los astronautas | NASA |
-| Investigación biológica | OSDR |
-| Función medioambiental | ARTEMIS y datos de Marte |
-
----
-
-## 🗺️ Plan de desarrollo
-
-- [ ] **Parte 1:** Diseñar e implementar el aspecto gráfico de las dos escenas.
-- [ ] **Parte 2:** Montar el modelo de toma de decisiones y gestión de recursos.
-- [ ] **Parte 3:** Añadir todos los eventos que podamos.
-
----
-
-## 🤝 Contribuir
-
-¿Quieres colaborar? Crea una rama a partir de `main`, haz tus cambios y abre un Pull Request para que el equipo lo revise.
-
----
-
-*Los datos científicos mostrados en el juego proceden de fuentes públicas de la NASA.*
+| Solar activity & radiation risk | DONKI |
+| Astronaut radiation dosimetry | NASA |
+| Biological research | OSDR |
+| Environmental data | ARTEMIS & Mars datasets |
