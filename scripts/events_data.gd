@@ -14,6 +14,7 @@ var Scientist: PackedScene = load("res://scenes/characters/scientist/scientist.t
 
 var ImgFlare: Texture2D = load("res://assets/sprites/event_images/solar_flare_cabron.png")
 var ImgReactor: Texture2D = load("res://assets/sprites/event_images/Nuclear_reactor.jpg")
+var ImgMeteor: Texture2D = load("res://assets/sprites/event_images/mars_meteorite.png")
 
 const CH := Event.Type.CHARACTER
 const CO := Event.Type.COMMS
@@ -150,25 +151,36 @@ func _ready() -> void:
 	# ===== EXPEDICIONES (Anthony Clark): el premio llega unos dias DESPUES; si falla, no llega nada =====
 	_r("cave", "👨‍🚀🕳️💎", "I found an interesting cave with useful resources", CH,
 		_b(), "Go!", _b(), "Stay", Astronaut, 80.0)
-	_later("cave", 1, "🕳️ Cave expedition", _b(0, 0, 10, 10), 2)
+	_later("cave", 1, "🕳️ Cave expedition", _b(0, 0, 10, 5), 1)
+	_expedition("cave")
 	_r("ice", "👨‍🚀🧊❓", "There is some ice a bit further from the base, but there could be some risk", CH,
 		_b(), "Go!", _b(), "Stay", Astronaut, 60.0)
-	_later("ice", 1, "🧊 Ice expedition", _b(0, 0, 20, 20), 4)
+	_later("ice", 1, "🧊 Ice expedition", _b(0, 0, 20, 10), 2)
+	_expedition("ice")
 	_r("cliff", "👨‍🚀🧗⚠️", "I discovered a dangerous cliff. It is a risky operation, but it could reward us", CH,
 		_b(), "Go!", _b(), "Stay", Astronaut, 40.0)
-	_later("cliff", 1, "🧗 Cliff expedition", _b(20, 0, 30, 20), 3)
+	_later("cliff", 1, "🧗 Cliff expedition", _b(20, 0, 30, 15), 2)
+	_expedition("cliff")
 	_r("old_base", "👨‍🚀🏚️🔎", "I want to search an old abandoned base", CH,
 		_b(0, 0, 0, 10), "Search", _b(), "No", Astronaut, 80.0)
-	_mod("old_base", 1, "🏚️ Old base salvage", _b(15), 2)
+	_mod("old_base", 1, "🏚️ Old base salvage", _b(15), 1)
+	_expedition("old_base")
 
 	# ===== GRANJA (John Rake) =====
 	_r("new_crops", "🧑‍🌾🌶️🌱", "We are having problems with our farms. I want to try planting other types of food", CH,
 		_b(-5), "Try it", _b(), "No", Farmer, 70.0)
 	_mod("new_crops", 1, "🌶️ New crops", _b(0, 10), 3)
-	_mod("new_crops", 2, "🥀 Failing farms", _b(0, -20), 2)
+	_mod("new_crops", 2, "🥀 Failing farms", _b(0, -10), 2)
 	_r("greenhouse", "🧑‍🌾⛏️🏠", "I want to build an underground greenhouse to produce more food", CH,
 		_b(-15, 0, -5), "Build", _b(), "No", Farmer, 70.0)
 	_mod("greenhouse", 1, "🏠 Greenhouse", _b(0, 10), -1)
+	_r("rake", "🧑‍🌾🔧💔", "My rake broke while I was harvesting some lettuce. Could I have some resources to repair it?", CH,
+		_b(-10), "Repair it", _b(), "No", Farmer)
+	_mod("rake", 2, "🔧 Broken rake", _b(0, -10), -1)
+	_problem("rake")
+	_tut("rake")
+	_r("protect_plants", "🧑‍🌾💧🛡️", "I want to use some of our water to make a protection for our plants", CH,
+		_b(0, 0, -15), "Use water", _b(0, -15), "No", Farmer)
 
 	# ===== CIENCIA (Sandra Hawkins) =====
 	_r("research_veg", "🧑‍🔬🥬🔬", "I need to research our vegetables to make them more resistant to the harsh Martian climate. Could I borrow some?", CH,
@@ -183,18 +195,34 @@ func _ready() -> void:
 	# ===== RADIO DE LA NASA =====
 	_r("fission_power", "📻⚛️⚡", "We want you to build a Fission Surface Power system to produce more energy", CO,
 		_b(0, 0, -10), "Build", _b(), "No", Radio)
-	_mod("fission_power", 1, "⚛️ Fission power", _b(20), -1)
+	_mod("fission_power", 1, "⚛️ Fission power", _b(15), -1)
+	_r("build_antenna", "📻📡🏗️", "Build an antenna so we can talk to you from Earth", CO,
+		_b(-10), "Build", _b(), "Not now", Radio)
+	_build("build_antenna", 1, "antenna")
+	_r("report", "📻🌍📝", "What is the situation up there on Mars? It is time to send us the periodic report", CO,
+		_b(-10), "Send report", _b(), "Later", Radio)
+	_later("report", 2, "📝 Late report", _b(-20), 2)
+	_needs("report", "antenna")
+	_r("more_oxygen", "📻🫁💧", "You need to produce more oxygen", CO,
+		_b(0, 0, -15), "Produce it", _b(), "No", Radio)
+	_later("more_oxygen", 2, "🫁 Oxygen shortage", _b(0, 0, -25), 2)
 
 	# ===== SUCESOS DE LA BASE (sin personaje: saltan alertas con dos botones) =====
 	_r("reactor_risk", "☢️⚠️🔧", "The nuclear reactor is in danger! Do you want to take the risk to repair it before something worse happens?", EV,
 		_b(0, -20, 20), "Repair it", _b(-15), "Shut down", null, 100.0, ImgReactor)
-	_mod("reactor_risk", 1, "☢️ Reactor damage", _b(-10), -1)
 	_mod("reactor_risk", 2, "☢️ Reactor damage", _b(-10), -1)
+	_problem("reactor_risk")
 	_r("toxins", "💧☠️😷", "OH NO! There are toxins in the water! Do you drink it anyway?", EV,
 		_b(0, 0, 15), "Drink it", _b(0, 0, -20), "Pour it out", null, 30.0)
 	_fail("toxins", _b(0, 0, 0, 20))
 	_r("water_dig", "⛏️💧🤔", "The water excavation is getting complicated. Do we continue or search in another place?", EV,
 		_b(-10, 0, 20), "Continue", _b(-20, 0, 10), "Move", null, 65.0)
+	_r("meteor_rain", "☄️💥⚠️", "Alert! A meteor rain! You have to decide if you protect the generators or the water tank", EV,
+		_b(0, 0, -20), "Save generators", _b(-20), "Save water tank", null, 100.0, ImgMeteor)
+	_r("oxygen_leak", "🫁💨🔧", "We have a leak in our oxygen tank! We need to repair it!", EV,
+		_b(-10, 0, -5), "Repair it", _b(), "Ignore it", null, 90.0)
+	_doom("oxygen_leak", 2, 3, "🫁 Oxygen leak", "🫁 The oxygen ran out! The leak was never fixed.")
+	_problem("oxygen_leak")
 
 	# ===== ALERTAS DEL DIA: salen al empezar el dia, no hay que decidir =====
 	# _d(id, emojis, texto, etiqueta, efecto cada noche, produccion bloqueada, foto, noches que dura, multiplicadores, edificio requerido)
@@ -242,6 +270,22 @@ func _build(id: String, opt: int, building: String) -> void:
 		events[id].build1 = building
 	else:
 		events[id].build2 = building
+
+# Si eliges esa opcion, dentro de N dias se acaba la partida (ej. fuga de oxigeno sin reparar).
+func _doom(id: String, opt: int, days: int, label: String, reason: String) -> void:
+	var m := {"label": label, "ben": _b(), "days": days, "doom": reason}
+	if opt == 1:
+		events[id].later1 = m
+	else:
+		events[id].later2 = m
+
+# Problema abierto: si no lo arreglas (opcion 1 con exito) vuelve a salir cada dia, con sus efectos, hasta que lo arregles.
+func _problem(id: String) -> void:
+	events[id].problem = true
+
+# Expedicion del astronauta: mientras dura no puede aparecer.
+func _expedition(id: String) -> void:
+	events[id].expedition = true
 
 # Efecto cuando la opcion 1 FALLA (por defecto solo pagas los costes).
 func _fail(id: String, ben: Event.Benefits) -> void:

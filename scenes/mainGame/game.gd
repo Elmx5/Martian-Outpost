@@ -13,17 +13,18 @@ const WIN_DAY := 10          # dias que hay que sobrevivir
 const MIN_VISITORS := 2      # situaciones por dia (minimo)
 const MAX_VISITORS := 5      # situaciones por dia (maximo)
 const NEG_SCALE := 0.6       # los efectos malos de los eventos se multiplican por esto (1.0 = original)
-const FAIL_PENALTY := 8      # energia extra que se pierde si una opcion arriesgada sale mal
+const FAIL_PENALTY := 10     # energia extra que se pierde si una opcion arriesgada (mision) sale mal
+const FAIL_EXTRA := 4        # comida y agua extra que se pierden tambien al fallar
 const SICK_LEVEL := 60       # con esta radiacion o mas la tripulacion enferma
 const SICK_PENALTY := 3      # cada noche enferma: pierdes esto en energia, comida y agua
 const DAY_EVENT_CHANCE := 0.75  # probabilidad de que un dia (a partir del 2) empiece con un evento del dia
 # Produccion y gasto base de cada NOCHE por recurso (energia, comida, agua, radiacion).
 # "prod" = produccion: los eventos del dia pueden bloquearla (ej. el dust devil tapa los paneles solares).
 var base_lines: Array = [
-	[{"label": "☀️ Solar panels", "v": 8, "prod": true}, {"label": "🏠 Base lights", "v": -7}],
-	[{"label": "🌱 Farm", "v": 6, "prod": true}, {"label": "🍽️ Crew meals", "v": -7}],
-	[{"label": "💧 Water pump", "v": 6, "prod": true}, {"label": "🚿 Crew water", "v": -7}],
-	[{"label": "🌌 Space radiation", "v": 9, "prod": true}, {"label": "🛡️ Base shield", "v": -8}],
+	[{"label": "☀️ Solar panels", "v": 9, "prod": true, "bld": "panels"}, {"label": "🏠 Base lights", "v": -7}],
+	[{"label": "🌱 Farm", "v": 7, "prod": true, "bld": "farm"}, {"label": "🍽️ Crew meals", "v": -7}],
+	[{"label": "💧 Water pump", "v": 7, "prod": true, "bld": "water"}, {"label": "🚿 Crew water", "v": -7}],
+	[{"label": "🌌 Space radiation", "v": 9, "prod": true}, {"label": "🛡️ Base shield", "v": -10}],
 ]
 
 # Posiciones (fraccion de pantalla): puerta de la oficina y sitio donde se para el visitante
@@ -54,6 +55,14 @@ var current: Event
 var current_char: Node2D
 var bob_tw: Tween
 var hl_tw: Tween
+var unresolved: Array = []  # problemas sin arreglar: vuelven a salir cada dia
+var astro_away := 0         # dias que le quedan de expedicion al astronauta
+var mods_scroll: ScrollContainer
+var extras: Array = []      # problemas abiertos que vuelven hoy: salen aparte, no gastan visitantes
+var is_extra := false
+var type_tw: Tween          # animacion de escribir el texto (un clic la completa)
+var typing := false
+var infinite := false       # modo infinito: no hay dia final y la base gasta cada vez mas
 var day := 1
 var sit_idx := 0
 var visitors_today := 3
@@ -62,6 +71,12 @@ var announcing := false
 var today_event: Dictionary = {}
 var tut_i := 0
 var busy := true
+var built := {}            # edificios construidos (farm, panels, water, antenna)
+var pending: Array = []    # efectos que llegan dentro de N dias
+var queue: Array = []      # eventos que salen seguro hoy (tutoriales)
+var retry: Array = []      # tutoriales rechazados: vuelven manana
+var today_left := 0        # noches que le quedan al evento del dia
+var doom := ""              # motivo de game over diferido (fuga de oxigeno)
 
 var char_layer: Control
 var glow: ColorRect
@@ -89,6 +104,7 @@ var talk: AudioStreamPlayer
 
 func _ready() -> void:
 	theme = UIStyle.make_theme()
+	infinite = Settings.infinite_mode
 	Transition.stop_music()
 	Resources.reset()
 	_init_stats()
@@ -159,7 +175,7 @@ func _build_ui() -> void:
 	# Noche (por debajo de la interfaz para poder ver las barras)
 	night = _rect(Color(0.02, 0.03, 0.12, 0.8), 0.0, 0.0, 1.0, 1.0)
 	night_label = Label.new()
-	night_label.text = "🌙 Night falls..."
+	night_label.text = ""
 	night_label.add_theme_font_size_override("font_size", 64)
 	night_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	night_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -360,8 +376,13 @@ func _build_day_panel() -> void:
 	day_label.add_theme_color_override("font_color", UIStyle.AMBER)
 	day_label.text = "TUTORIAL"
 	v.add_child(day_label)
+	mods_scroll = ScrollContainer.new()
+	mods_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	mods_scroll.custom_minimum_size = Vector2(300, 0)
+	v.add_child(mods_scroll)
 	mods_box = VBoxContainer.new()
-	v.add_child(mods_box)
+	mods_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	mods_scroll.add_child(mods_box)
 	var src := Label.new()
 	src.text = "◆ REAL NASA DATA"
 	src.add_theme_color_override("font_color", UIStyle.SCREEN_FG)
@@ -372,7 +393,11 @@ func _build_day_panel() -> void:
 	v.add_child(src)
 
 func _update_day_label() -> void:
-	day_label.text = "DAY %d/%d\nVISITOR %d/%d" % [day, WIN_DAY, sit_idx, visitors_today]
+	var dl := "DAY %d" % day if infinite else "DAY %d/%d" % [day, WIN_DAY]
+	if is_extra:
+		day_label.text = dl + "\n⚠️ UNSOLVED"
+	else:
+		day_label.text = dl + "\nVISITOR %d/%d" % [sit_idx, visitors_today]
 
 # Hace parpadear una parte de la interfaz (para el tutorial)
 func _highlight(key: String) -> void:
@@ -404,9 +429,27 @@ func _daily() -> Event.Benefits:
 func _lines(res: int) -> Array:
 	var out: Array = []
 	var blocked_here: bool = not today_event.is_empty() and res in today_event["block"]
+	var mult := 1
+	if not today_event.is_empty():
+		mult = int((today_event["mult"] as Dictionary).get(res, 1))
 	for l in base_lines[res]:
 		var blk: bool = blocked_here and l.get("prod", false)
-		out.append({"label": l["label"], "v": l["v"], "blocked": blk, "by": today_event["label"] if blk else ""})
+		var by := "blocked by " + String(today_event["label"]) if blk else ""
+		if l.has("bld") and not built.has(l["bld"]):
+			blk = true
+			by = "not built yet"
+		var v: int = l["v"]
+		if l.get("prod", false):
+			v *= mult
+		# Modo infinito: pasado el dia final la base gasta mas cada 2 dias (y entra mas radiacion)
+		if infinite and day > WIN_DAY:
+			var pr := int((day - WIN_DAY) / 2.0)
+			if res == Resources.SpaceResource.RADIATION:
+				if l.get("prod", false):
+					v += int(pr / 2.0)
+			elif v < 0:
+				v -= pr
+		out.append({"label": l["label"], "v": v, "blocked": blk, "by": by})
 	if not today_event.is_empty():
 		var tv := _delta_of(today_event["ben"], res)
 		if tv != 0:
@@ -422,18 +465,28 @@ func _lines(res: int) -> Array:
 func _refresh_mods() -> void:
 	for c in mods_box.get_children():
 		c.queue_free()
+	var rows := 0
 	if not today_event.is_empty():
-		var tl := Label.new()
-		tl.text = "⚠️ %s (tonight)" % today_event["label"]
-		tl.add_theme_font_size_override("font_size", 20)
-		tl.add_theme_color_override("font_color", Color("fca5a5"))
-		mods_box.add_child(tl)
+		_mod_row("⚠️ %s (%d night%s)" % [today_event["label"], today_left, "" if today_left == 1 else "s"], Color("fca5a5"))
+		rows += 1
 	for m in mods:
-		var l := Label.new()
-		l.text = "%s  (%dd)" % [m["label"], m["days"]]
-		l.add_theme_font_size_override("font_size", 20)
-		mods_box.add_child(l)
+		_mod_row(m["label"] if m["days"] < 0 else "%s  (%dd)" % [m["label"], m["days"]], Color.WHITE)
+		rows += 1
+	for p in pending:
+		_mod_row("⏳ %s  (in %dd)" % [p["label"], p["days"]], Color("fcd34d"))
+		rows += 1
+	# La lista no crece sin limite: pasado el maximo sale una barra deslizante
+	mods_scroll.custom_minimum_size = Vector2(300, minf(rows * 30.0, 150.0))
 	_refresh_tips()
+
+func _mod_row(text: String, color: Color) -> void:
+	var l := Label.new()
+	l.text = text
+	l.add_theme_font_size_override("font_size", 20)
+	l.add_theme_color_override("font_color", color)
+	l.custom_minimum_size.x = 270
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	mods_box.add_child(l)
 
 # Tooltip de cada barra: que suma y que resta cada noche
 func _refresh_tips() -> void:
@@ -445,7 +498,7 @@ func _refresh_tips() -> void:
 		var net := 0
 		for l in _lines(res):
 			if l["blocked"]:
-				blocked.append("   %s  (blocked by %s)" % [l["label"], l["by"]])
+				blocked.append("   %s  (%s)" % [l["label"], l["by"]])
 				continue
 			var v: int = l["v"]
 			net += v
@@ -470,7 +523,7 @@ func _start_tutorial() -> void:
 	tutorial = true
 	tut_i = 0
 	btn2.visible = false
-	btn1.text = "Next 👉"
+	btn1.text = "Next"
 	await _arrive(EventsData.Radio, "📻", false)
 	_tut_step()
 
@@ -478,8 +531,11 @@ func _tut_step() -> void:
 	busy = true
 	var s: Dictionary = TUTORIAL[tut_i]
 	_highlight(s["hl"])
-	btn1.text = "Let's go! 🚀" if tut_i == TUTORIAL.size() - 1 else "Next 👉"
-	await _say(s["emoji"], String(s["text"]).replace("{d}", str(WIN_DAY)), null, {}, "NASA CALLING")
+	btn1.text = "Let's go!" if tut_i == TUTORIAL.size() - 1 else "Next"
+	var line := String(s["text"]).replace("{d}", str(WIN_DAY))
+	if infinite:
+		line = line.replace("Survive %d days to win!" % WIN_DAY, "Survive as many days as you can!")
+	await _say(s["emoji"], line, null, {}, "NASA CALLING")
 	busy = false
 
 func _tutorial_next() -> void:
@@ -488,6 +544,8 @@ func _tutorial_next() -> void:
 		tutorial = false
 		_highlight("")
 		btn2.visible = true
+		btn1.text = ""
+		btn2.text = ""
 		await _dismiss()
 		_begin_day()
 	else:
@@ -496,25 +554,41 @@ func _tutorial_next() -> void:
 # ---------- Flujo del juego ----------
 
 func _begin_day() -> void:
-	visitors_today = randi_range(MIN_VISITORS, MAX_VISITORS)
+	queue = retry.duplicate()
+	retry.clear()
+	extras = unresolved.duplicate()
+	is_extra = false
+	if day == 1:
+		queue.append_array(EventsData.tutorial_ids)
+	visitors_today = maxi(randi_range(MIN_VISITORS, MAX_VISITORS), queue.size())
 	sit_idx = 0
 	_update_day_label()
 	_pop_banner("☀️")
 	await get_tree().create_timer(0.8).timeout
 	# Al empezar el dia, a veces hay una alerta que cambia lo que ganas por la noche
-	if day > 1 and randf() < DAY_EVENT_CHANCE:
-		var ids: Array = EventsData.day_events.keys()
+	var ids := _day_event_ids()
+	if day > 1 and today_event.is_empty() and not ids.is_empty() and randf() < DAY_EVENT_CHANCE:
 		today_event = EventsData.day_event_today(ids.pick_random())
+		today_left = int(today_event.get("days", 1))
 		_refresh_mods()
 		_announce(today_event)
 	else:
 		_next_event()
 
+# Alertas del dia disponibles (las que piden un edificio solo salen si ya esta construido)
+func _day_event_ids() -> Array:
+	var out: Array = []
+	for k in EventsData.day_events:
+		var rq: String = EventsData.day_events[k]["requires"]
+		if rq == "" or built.has(rq):
+			out.append(k)
+	return out
+
 func _announce(d: Dictionary) -> void:
 	announcing = true
 	busy = true
 	btn2.visible = false
-	btn1.text = "OK 👍"
+	btn1.text = "OK"
 	var a := create_tween()
 	for i in 2:
 		a.tween_property(alert, "modulate:a", 0.3, 0.2)
@@ -532,18 +606,39 @@ func _announce_done() -> void:
 	_next_event()
 
 func _next_event() -> void:
-	if deck.is_empty():
-		deck = EventsData.events.keys()
-		deck.shuffle()
-	current = EventsData.events[deck.pop_back()]
+	if not extras.is_empty():
+		current = EventsData.events[extras.pop_front()]
+		is_extra = true
+	elif not queue.is_empty():
+		current = EventsData.events[queue.pop_front()]
+		is_extra = false
+	else:
+		current = _pick_event()
+		is_extra = false
 	_show_event(current)
 
+# Evento al azar: sin tutoriales, sin los que piden un edificio que aun no existe y sin construir dos veces lo mismo
+func _pick_event() -> Event:
+	for i in 80:
+		if deck.is_empty():
+			for k in EventsData.events:
+				if not EventsData.events[k].tutorial:
+					deck.append(k)
+			deck.shuffle()
+		var ev: Event = EventsData.events[deck.pop_back()]
+		var done: bool = ev.build1 != "" and built.has(ev.build1)
+		var away: bool = astro_away > 0 and ev.character == EventsData.Astronaut
+		if (ev.requires == "" or built.has(ev.requires)) and not done and not away:
+			return ev
+	return EventsData.events["water_dig"]
+
 func _show_event(ev: Event) -> void:
-	sit_idx += 1
+	if not is_extra:
+		sit_idx += 1
 	_update_day_label()
-	btn1.text = ev.label1 + ("  🎲%d%%" % int(ev.winChance) if ev.winChance < 100.0 else "")
-	btn2.text = ev.label2
 	await _arrive(ev.character, ev.emojis, false)
+	btn1.text = ev.label1 + ("  (%d%%)" % int(ev.winChance) if ev.winChance < 100.0 else "")
+	btn2.text = ev.label2
 	var ph: Texture2D = ev.photo if ev.photo != null else EventsData.nasa_photo(ev.id)
 	var hdr := _speaker(ev)
 	await _say(ev.emojis, ev.desc, ph, EventsData.fact_for(ev.id), hdr, EventsData.photo_credit(ev.id))
@@ -557,26 +652,27 @@ func _speaker(ev: Event) -> String:
 		return "SANDRA HAWKINS · SCIENTIST"
 	if ev.character == EventsData.Astronaut:
 		return "ANTHONY CLARK · ASTRONAUT"
+	if ev.character == null:
+		return "BASE ALERT"
 	return "RADIO FROM EARTH"
 
 # El visitante llama a la puerta, esta se ilumina y entra caminando
-func _arrive(scene: PackedScene, fallback: String, alert_flash: bool) -> void:
+func _arrive(scene: PackedScene, _fallback: String, alert_flash: bool) -> void:
 	bubble.modulate.a = 0.0
 	desk_text.modulate.a = 0.0
 	var door := size * DOOR
 	var spot := size * SPOT
-	var who: Node2D
+	if scene == null:
+		# Aviso de la base (sin personaje): parpadea la alarma y no entra nadie, solo salen los emojis en el bocadillo
+		current_char = null
+		var a0 := create_tween()
+		for i in 2:
+			a0.tween_property(alert, "modulate:a", 0.3, 0.2)
+			a0.tween_property(alert, "modulate:a", 0.0, 0.25)
+		await get_tree().create_timer(0.55).timeout
+		return
+	var who: Node2D = scene.instantiate() as Node2D
 	var end_scale := Vector2(2.6, 2.6)
-	if scene:
-		who = scene.instantiate() as Node2D
-	else:
-		who = Node2D.new()
-		var l := Label.new()
-		l.text = fallback
-		l.add_theme_font_size_override("font_size", 150)
-		l.position = Vector2(-100, -110)
-		who.add_child(l)
-		end_scale = Vector2.ONE
 	if alert_flash:
 		var a := create_tween()
 		for i in 2:
@@ -638,9 +734,12 @@ func _say(emojis: String, text: String, img: Texture2D = null, fact: Dictionary 
 	var dur := clampf(text.length() * 0.035, 0.6, 1.8)
 	talk.stream = SFX_TALK
 	talk.play(randf_range(0.0, maxf(0.0, SFX_TALK.get_length() - dur)))
-	var tt := create_tween()
-	tt.tween_property(text_label, "visible_ratio", 1.0, dur)
-	await tt.finished
+	typing = true
+	type_tw = create_tween()
+	type_tw.tween_property(text_label, "visible_ratio", 1.0, dur)
+	await type_tw.finished
+	typing = false
+	text_label.visible_ratio = 1.0
 	talk.stop()
 	if spr:
 		spr.play("idle")
@@ -659,7 +758,15 @@ func _soft(v: int, bad_when_positive: bool) -> int:
 		return roundi(v * NEG_SCALE)
 	return v
 
+# Si el texto aun se esta escribiendo, el clic solo lo completa (no elige)
+func _skip_typing() -> void:
+	if type_tw and type_tw.is_valid():
+		type_tw.custom_step(10.0)
+
 func _choose(opt: int) -> void:
+	if typing:
+		_skip_typing()
+		return
 	if busy:
 		return
 	busy = true
@@ -677,14 +784,34 @@ func _choose(opt: int) -> void:
 		ok = randf() * 100.0 < current.winChance
 	if not ok:
 		# Fallo: solo se pierde lo que costaba, mas un susto de energia
-		ben = Event.Benefits.new(mini(ben.energy, 0) - FAIL_PENALTY, mini(ben.food, 0), mini(ben.water, 0), 0)
+		ben = Event.Benefits.new(mini(ben.energy, 0) - FAIL_PENALTY, mini(ben.food, 0) - FAIL_EXTRA, mini(ben.water, 0) - FAIL_EXTRA, 0)
+		if current.fail1 != null:
+			ben = _sum(ben, current.fail1)
 	_show_deltas(ben, true)
 	Resources.apply(ben)
 	var nm: Dictionary = current.mod1 if opt == 1 else current.mod2
-	if ok and not nm.is_empty():
-		mods.append(nm.duplicate())
-		_refresh_mods()
-	_pop_banner("🎉" if ok else "😵")
+	var lm: Dictionary = current.later1 if opt == 1 else current.later2
+	if current.problem and opt == 1 and ok:
+		_solve(current.id)
+	else:
+		if ok and not nm.is_empty():
+			_add_effect(mods, current, nm)
+		if ok and not lm.is_empty():
+			_add_effect(pending, current, lm)
+		if current.problem:
+			_open_problem(current)
+	if ok and opt == 1 and current.expedition:
+		astro_away = maxi(astro_away, int(lm.get("days", nm.get("days", 1))))
+	elif not ok and current.expedition:
+		astro_away = maxi(astro_away, 1)
+	var bld: String = current.build1 if opt == 1 else current.build2
+	if ok and bld != "":
+		built[bld] = true
+	if opt == 2 and current.tutorial and current.type == Event.Type.COMMS:
+		retry.append(current.id)
+	_refresh_mods()
+	if not ok:
+		_pop_banner("😵")
 	if not ok or ben.radiation >= 8 or minf(minf(ben.energy, ben.food), ben.water) <= -12:
 		_shake()
 	await get_tree().create_timer(1.6).timeout
@@ -699,21 +826,60 @@ func _choose(opt: int) -> void:
 	else:
 		_next_event()
 
+# Apunta un efecto (modificador o efecto diferido) con su origen. Los permanentes y los de problemas no se duplican.
+func _add_effect(list: Array, src: Event, e: Dictionary) -> void:
+	if e["days"] < 0 or src.problem:
+		for x in list:
+			if x.get("src", "") == src.id and x["label"] == e["label"]:
+				return
+	var c := e.duplicate()
+	c["src"] = src.id
+	c["day"] = day
+	list.append(c)
+
+# Problema sin arreglar: vuelve cada dia y, si tiene cuenta atras de game over, esta empieza
+func _open_problem(ev: Event) -> void:
+	if not unresolved.has(ev.id):
+		unresolved.append(ev.id)
+	if ev.later2.has("doom"):
+		_add_effect(pending, ev, ev.later2)
+
+# Problema arreglado: ya no vuelve y desaparecen sus efectos
+func _solve(id: String) -> void:
+	unresolved.erase(id)
+	mods = mods.filter(func(m: Dictionary) -> bool: return m.get("src", "") != id)
+	pending = pending.filter(func(p: Dictionary) -> bool: return p.get("src", "") != id)
+
 # Cae la noche: la base gasta recursos y los efectos activos pasan un dia
 func _end_day() -> void:
 	create_tween().tween_property(night, "modulate:a", 1.0, 0.6)
 	create_tween().tween_property(night_label, "modulate:a", 1.0, 0.6)
 	await get_tree().create_timer(0.7).timeout
-	var total := _daily()
+	# Efectos que llegan unos dias despues (y fugas sin reparar que acaban la partida)
+	var arrived := Event.Benefits.new()
+	for p in pending:
+		p["days"] -= 1
+		if p["days"] <= 0:
+			arrived = _sum(arrived, p["ben"])
+			if p.has("doom") and doom == "":
+				doom = p["doom"]
+	pending = pending.filter(func(p: Dictionary) -> bool: return p["days"] > 0)
+	astro_away = maxi(astro_away - 1, 0)
+	var total := _sum(_daily(), arrived)
 	_show_deltas(total, true)
 	Resources.apply(total)
-	today_event = {}
+	if not today_event.is_empty():
+		today_left -= 1
+		if today_left <= 0:
+			today_event = {}
 	for m in mods:
-		m["days"] -= 1
-	mods = mods.filter(func(m: Dictionary) -> bool: return m["days"] > 0)
+		if m["days"] > 0:
+			m["days"] -= 1
+	mods = mods.filter(func(m: Dictionary) -> bool: return m["days"] != 0)
 	_refresh_mods()
 	await get_tree().create_timer(1.8).timeout
 	day += 1
+	_refresh_mods()
 	var t := create_tween().set_parallel(true)
 	t.tween_property(night, "modulate:a", 0.0, 0.6)
 	t.tween_property(night_label, "modulate:a", 0.0, 0.6)
@@ -801,8 +967,10 @@ func _dismiss() -> void:
 
 func _check_end() -> bool:
 	var R := Resources
-	var reason := ""
-	if R.getResource(R.SpaceResource.ENERGY) <= 0:
+	var reason := doom
+	if reason != "":
+		pass
+	elif R.getResource(R.SpaceResource.ENERGY) <= 0:
 		reason = "⚡ No energy! The base went dark."
 	elif R.getResource(R.SpaceResource.FOOD) <= 0:
 		reason = "🥬 No food! The crew is hungry."
@@ -811,12 +979,23 @@ func _check_end() -> bool:
 	elif R.getResource(R.SpaceResource.RADIATION) >= 100:
 		reason = "☢️ Too much radiation! It is not safe."
 	if reason != "":
+		if infinite:
+			reason += "\n" + _record_text()
 		_show_end(false, reason)
 		return true
-	if day > WIN_DAY:
+	if not infinite and day > WIN_DAY:
 		_show_end(true, "You kept the crew safe for %d days!" % WIN_DAY)
 		return true
 	return false
+
+# Modo infinito: dias completados y record guardado
+func _record_text() -> String:
+	var survived := day - 1
+	var best := Settings.best_days
+	if survived > best:
+		Settings.set_best(survived)
+		return "You survived %d days. New record!" % survived
+	return "You survived %d days. Record: %d" % [survived, best]
 
 func _show_end(won: bool, reason: String) -> void:
 	var dim := _rect(Color(0.02, 0.03, 0.1, 0.88), 0.0, 0.0, 1.0, 1.0)

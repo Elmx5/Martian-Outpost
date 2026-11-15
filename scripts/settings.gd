@@ -8,6 +8,8 @@ const SFX_BUS := "SFX"
 
 var music_volume := 1.0
 var sfx_volume := 1.0
+var infinite_mode := false  # lo pone el boton del menu antes de entrar al juego
+var best_days := 0          # record del modo infinito
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -45,6 +47,7 @@ func save() -> void:
 	var cfg := ConfigFile.new()
 	cfg.set_value("audio", "music", music_volume)
 	cfg.set_value("audio", "sfx", sfx_volume)
+	cfg.set_value("records", "infinite", best_days)
 	cfg.save(PATH)
 
 func _load() -> void:
@@ -53,6 +56,11 @@ func _load() -> void:
 		return
 	music_volume = clampf(float(cfg.get_value("audio", "music", 1.0)), 0.0, 1.0)
 	sfx_volume = clampf(float(cfg.get_value("audio", "sfx", 1.0)), 0.0, 1.0)
+	best_days = int(cfg.get_value("records", "infinite", 0))
+
+func set_best(days: int) -> void:
+	best_days = days
+	save()
 
 # ---- Pantalla completa ----
 # En el navegador solo funciona si se pide dentro de un clic del jugador (el boton de opciones lo es).

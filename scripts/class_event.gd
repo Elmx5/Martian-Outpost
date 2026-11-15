@@ -24,6 +24,10 @@ var duration: int
 var character: PackedScene
 var photo: Texture2D
 var winChance: float # percentage 0-100 (applies to option 1)
+# Problema que sigue saliendo cada dia hasta que lo arreglas (la opcion 1 lo arregla); si no, se queda abierto
+var problem := false
+# Expedicion: el astronauta no vuelve a aparecer hasta que termina
+var expedition := false
 
 # Kid-friendly presentation
 var emojis: String = "❓"

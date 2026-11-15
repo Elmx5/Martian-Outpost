@@ -52,7 +52,7 @@ anchor_bottom = 0.5
 offset_left = -180.0
 offset_top = 20.0
 offset_right = 180.0
-offset_bottom = 220.0
+offset_bottom = 350.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 24
@@ -64,6 +64,15 @@ text = "Play"
 script = ExtResource("2_0ma31")
 game_scene = ExtResource("3_vif7f")
 disclaimer_texture = ExtResource("8_biq0h")
+
+[node name="infinite" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(360, 90)
+layout_mode = 2
+text = "Infinite mode"
+script = ExtResource("2_0ma31")
+game_scene = ExtResource("3_vif7f")
+disclaimer_texture = ExtResource("8_biq0h")
+infinite = true
 
 [node name="options" type="Button" parent="VBoxContainer" unique_id=681515481]
 custom_minimum_size = Vector2(360, 90)

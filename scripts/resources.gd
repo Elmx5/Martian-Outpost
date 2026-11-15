@@ -13,9 +13,9 @@ func _ready() -> void:
 
 func reset() -> void:
 	spaceResources = {
-		SpaceResource.ENERGY: 70,
-		SpaceResource.FOOD: 70,
-		SpaceResource.WATER: 70,
+		SpaceResource.ENERGY: 50,
+		SpaceResource.FOOD: 50,
+		SpaceResource.WATER: 50,
 		SpaceResource.RADIATION: 10
 	}
 	for r in spaceResources:
